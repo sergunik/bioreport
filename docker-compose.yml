@@ -1,0 +1,47 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: bioreport-nginx
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    networks:
+      - bioreport
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: bioreport-app
+    volumes:
+      - .:/var/www
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/99-bioreport.ini:ro
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017
+    depends_on:
+      - mongodb
+    networks:
+      - bioreport
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:8
+    container_name: bioreport-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - bioreport
+
+networks:
+  bioreport:
+    driver: bridge
+
+volumes:
+  mongodb_data:

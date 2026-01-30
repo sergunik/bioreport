@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+echo "Running tests..."
+composer test
+echo "Running linters..."
+composer lint:test
+echo "Pre-push checks passed."

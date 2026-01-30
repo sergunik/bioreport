@@ -1,0 +1,16 @@
+.git
+.idea
+.env
+.env.*
+!.env.example
+vendor
+node_modules
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+*.md
+tests
+.phpunit.result.cache
+phpstan.neon
+.php-cs-fixer.cache
