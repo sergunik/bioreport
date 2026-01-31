@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Auth\Services;
 
+use App\Models\PasswordResetToken;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -24,7 +24,7 @@ final readonly class PasswordResetService
         }
 
         $token = Str::random(64);
-        DB::table('password_reset_tokens')->updateOrInsert(
+        PasswordResetToken::query()->updateOrCreate(
             ['email' => $user->email],
             ['token' => hash('sha256', $token), 'created_at' => now()]
         );
@@ -36,7 +36,7 @@ final readonly class PasswordResetService
     public function resetPassword(string $token, string $newPassword): ?User
     {
         $tokenHash = hash('sha256', $token);
-        $record = DB::table('password_reset_tokens')
+        $record = PasswordResetToken::query()
             ->where('token', $tokenHash)
             ->first();
 
@@ -52,7 +52,7 @@ final readonly class PasswordResetService
 
         $user->update(['password' => Hash::make($newPassword)]);
         $this->authService->revokeRefreshTokensForUser($user);
-        DB::table('password_reset_tokens')->where('email', $user->email)->delete();
+        PasswordResetToken::query()->where('email', $user->email)->delete();
 
         return $user;
     }

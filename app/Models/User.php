@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use MongoDB\Laravel\Eloquent\Model;
+use MongoDB\Laravel\Relations\HasMany;
 
 final class User extends Model implements AuthenticatableContract
 {
     use HasFactory;
-    use HasUuids;
 
-    protected $table = 'users';
+    protected $connection = 'mongodb';
+
+    protected $collection = 'users';
 
     /**
      * @var list<string>
@@ -49,7 +49,7 @@ final class User extends Model implements AuthenticatableContract
 
     public function getAuthIdentifier(): string
     {
-        return $this->getKey();
+        return (string) $this->getKey();
     }
 
     public function getAuthPasswordName(): string

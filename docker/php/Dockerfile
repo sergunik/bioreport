@@ -11,7 +11,7 @@ RUN apk add --no-cache \
 
 RUN docker-php-ext-install intl mbstring opcache pcntl zip
 
-RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS openssl-dev \
     && pecl install mongodb-2.0.0 \
     && docker-php-ext-enable mongodb \
     && apk del .build-deps

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
+use App\Models\PasswordResetToken;
 use App\Models\User;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Tests\RefreshMongoDatabase;
 use Tests\TestCase;
 
 final class AuthApiTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshMongoDatabase;
 
     protected function setUp(): void
     {
@@ -136,7 +136,7 @@ final class AuthApiTest extends TestCase
     {
         $user = User::factory()->create(['email' => 'reset@example.com']);
         $token = 'valid-reset-token';
-        DB::table('password_reset_tokens')->insert([
+        PasswordResetToken::query()->create([
             'email' => $user->email,
             'token' => hash('sha256', $token),
             'created_at' => now(),

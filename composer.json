@@ -38,6 +38,7 @@
             "composer install",
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate",
+            "@php scripts/generate-jwt-secret.php",
             "@php artisan migrate --force"
         ],
         "test": [
