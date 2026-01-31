@@ -10,7 +10,6 @@ development tooling (GitHub templates and hooks).
 ### Included
 - API base routing setup
 - Public health check endpoint
-- API versioning foundation
 - OpenAPI documentation generation
 - PHPUnit tests for the health endpoint
 - Update README with API and tooling information
@@ -28,8 +27,8 @@ development tooling (GitHub templates and hooks).
 ## Functional Requirements
 
 ### API
-- Create base API route group (e.g. `/api/v1`)
-- Implement a public `GET /api/v1/health` endpoint
+- Create base API route group (`/api`)
+- Implement a public `GET /api/health` endpoint
 - Health check response must include:
   - service name
   - environment
@@ -94,7 +93,7 @@ Templates must:
 ---
 
 ## Acceptance Criteria
-- [ ] `/api/v1/health` returns expected JSON structure
+- [ ] `/api/health` returns expected JSON structure
 - [ ] Health endpoint covered by PHPUnit test
 - [ ] OpenAPI spec can be generated via a single command
 - [ ] OpenAPI file is committed or explicitly gitignored (documented choice)

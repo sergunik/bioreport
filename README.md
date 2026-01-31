@@ -43,8 +43,8 @@ Configure `.env` (e.g. `MONGODB_URI`, `MONGODB_DATABASE` for MongoDB).
 
 ## API
 
-- **Base URL:** `http://localhost:8000/api/v1` (with Docker)
-- **Health check:** `GET /api/v1/health` — returns HTTP 200 and JSON with `service`, `environment`, `version`, `timestamp` (ISO 8601). No database dependency.
+- **Base URL:** `http://localhost:8000/api` (with Docker)
+- **Health check:** `GET /api/health` — returns HTTP 200 and JSON with `service`, `environment`, `version`, `timestamp` (ISO 8601). No database dependency.
 
 ## Commands
 
