@@ -1,50 +1,32 @@
 # BioReport
 
-Privacy-first medical records API.
+Self-Hosted Medical Data Management and AI Analytics System
+
+This project is a privacy-first, self-hosted system designed for centralized storage, analysis, and visualization of personal medical data.
+
+It allows users to fully control their health information without relying on third-party cloud providers.
+
+The system solves common problems related to medical data fragmentation across different laboratories, countries, and formats. It provides a single historical timeline of medical analyses, eliminates manual data entry where possible, and enables clear, structured exports for healthcare professionals.
 
 ## Requirements
 
 - PHP 8.4
-- Composer
 - Docker & Docker Compose (for running the stack)
 - MongoDB (via Docker or local)
 
 ## Setup
 
-**With Docker (recommended):**
-
 ```bash
-docker-compose up -d
-docker-compose exec app composer install
-docker-compose exec app php -r "file_exists('.env') || copy('.env.example', '.env');"
-docker-compose exec app php artisan key:generate
+docker-compose up -d && docker-compose exec app composer setup
 ```
-
-Or run setup steps manually; for DB migrations use:
-
-```bash
-docker-compose exec app php artisan migrate --force
-```
-
-**Without Docker:**
-
-```bash
-composer install
-cp .env.example .env
-php artisan key:generate
-```
-
-Configure `.env` (e.g. `MONGODB_URI`, `MONGODB_DATABASE` for MongoDB).
 
 ## Running
 
 - **Web:** Nginx serves the app. With Docker: `http://localhost:8000`
-- **Queue (dev):** `docker-compose exec app composer dev` runs the queue worker. For log tailing run `php artisan pail` in another terminal.
-
-## API
-
-- **Base URL:** `http://localhost:8000/api` (with Docker)
-- **Health check:** `GET /api/health` — returns HTTP 200 and JSON with `service`, `environment`, `version`, `timestamp` (ISO 8601). No database dependency.
+- **Base URL:** `http://localhost:8000/api`
+- **Health check:** `http://localhost:8000/api/health`
+- **Database:** MongoDB at `mongodb://mongo:27017` (inside Docker) or `mongodb://localhost:27017` (local)
+- **Logs:** `storage/logs/laravel.log`
 
 ## Commands
 
@@ -55,23 +37,6 @@ Configure `.env` (e.g. `MONGODB_URI`, `MONGODB_DATABASE` for MongoDB).
 | `composer lint:test` | Check style without changing files |
 | `composer openapi:generate` | Generate OpenAPI spec to `docs/openapi/openapi.json` |
 
-Inside Docker:
-
-```bash
-docker-compose exec app composer test
-docker-compose exec app composer lint
-docker-compose exec app composer openapi:generate
-```
-
-## OpenAPI
-
-Generate the OpenAPI specification (JSON) with:
-
-```bash
-composer openapi:generate
-```
-
-Output: `docs/openapi/openapi.json`. The generated file is gitignored; run the command locally or in CI when needed.
 
 ## Git hooks (optional)
 
@@ -81,14 +46,6 @@ A pre-push hook runs tests and linters before `git push`. To install:
 cp scripts/pre-push .git/hooks/pre-push
 chmod +x .git/hooks/pre-push
 ```
-
-Hooks are optional; the project does not install them automatically.
-
-## GitHub templates
-
-- `.github/pull_request_template.md` — use when opening a PR
-- `.github/ISSUE_TEMPLATE/bug_report.md` — for bugs
-- `.github/ISSUE_TEMPLATE/feature_request.md` — for feature requests
 
 ## License
 

@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use MongoDB\Laravel\Eloquent\Model;
+use MongoDB\Laravel\Relations\BelongsTo;
 
 final class RefreshToken extends Model
 {
-    use HasUuids;
+    protected $connection = 'mongodb';
 
-    protected $table = 'refresh_tokens';
+    protected $collection = 'refresh_tokens';
 
     /**
      * @var list<string>
