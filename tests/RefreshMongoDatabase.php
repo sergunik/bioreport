@@ -43,7 +43,7 @@ trait RefreshMongoDatabase
     {
         $connection = DB::connection('mongodb');
 
-        foreach (['users', 'refresh_tokens', 'password_reset_tokens'] as $collection) {
+        foreach (['users', 'refresh_tokens', 'password_reset_tokens', 'accounts'] as $collection) {
             $connection->table($collection)->truncate();
         }
     }
