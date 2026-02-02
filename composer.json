@@ -35,7 +35,7 @@
     },
     "scripts": {
         "setup": [
-            "composer install",
+            "composer install --prefer-dist --no-progress --no-interaction",
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate",
             "@php scripts/generate-jwt-secret.php",
