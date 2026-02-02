@@ -24,7 +24,7 @@ final readonly class AccountService
             'timezone' => $data->timezone,
         ]);
 
-        if ($account->user_id !== $user->id) {
+        if ((string) $account->user_id !== (string) $user->id) {
             Log::error('Account created with mismatched user_id', [
                 'expected_user_id' => $user->id,
                 'actual_user_id' => $account->user_id,
