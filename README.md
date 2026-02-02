@@ -30,12 +30,12 @@ docker-compose up -d && docker-compose exec app composer setup
 
 ## Commands
 
-| Command | Description |
-|--------|-------------|
-| `composer test` | Run PHPUnit tests |
-| `composer lint` | Fix code style (Pint) |
+| Command              | Description |
+|----------------------|-------------|
+| `composer test`      | Run PHPUnit tests |
+| `composer lint`      | Fix code style (Pint) |
 | `composer lint:test` | Check style without changing files |
-| `composer openapi:generate` | Generate OpenAPI spec to `docs/openapi/openapi.json` |
+| `composer api`       | Generate OpenAPI spec to `docs/openapi/openapi.json` |
 
 
 ## Git hooks (optional)

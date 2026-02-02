@@ -1,6 +1,6 @@
 ## Description
 
-<!-- Describe your changes clearly -->
+@coderabbitai summary
 
 ## Checklist
 

@@ -51,7 +51,7 @@
         "lint:test": [
             "./vendor/bin/pint --test"
         ],
-        "openapi:generate": [
+        "api": [
             "@php artisan scramble:export --path=docs/openapi/openapi.json"
         ],
         "post-autoload-dump": [
