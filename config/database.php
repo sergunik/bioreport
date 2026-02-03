@@ -113,8 +113,15 @@ return [
 
         'mongodb' => [
             'driver' => 'mongodb',
-            'dsn' => env('MONGODB_URI', 'mongodb://localhost:27017'),
-            'database' => env('MONGODB_DATABASE', 'bioreport'),
+            'dsn' => env('MONGO_DB_URI', 'mongodb://localhost:27017'),
+            'host' => env('MONGO_DB_HOST', 'localhost'),
+            'port' => env('MONGO_DB_PORT', 27017),
+            'username' => env('MONGO_DB_USERNAME', ''),
+            'password' => env('MONGO_DB_PASSWORD', ''),
+            'database' => env('MONGO_DB_DATABASE', 'bioreport'),
+            'options' => array_filter([
+                'authSource' => env('MONGO_DB_AUTH_SOURCE', 'admin'),
+            ]),
         ],
 
     ],
