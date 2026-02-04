@@ -77,4 +77,12 @@ final class User extends Model implements AuthenticatableContract
     {
         return $this->hasMany(RefreshToken::class);
     }
+
+    /**
+     * @return HasMany<DiagnosticReport>
+     */
+    public function diagnosticReports(): HasMany
+    {
+        return $this->hasMany(DiagnosticReport::class);
+    }
 }

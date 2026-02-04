@@ -9,29 +9,34 @@ use App\Account\DTOs\AccountDto;
 use App\Account\Requests\CreateAccountRequest;
 use App\Account\Requests\UpdateAccountRequest;
 use App\Account\Services\AccountService;
+use App\Account\Services\AccountServiceFactory;
 use App\Auth\Services\CookieService;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\AuthenticatedController;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-final class AccountController extends Controller
+final class AccountController extends AuthenticatedController
 {
-    public function __construct(
-        private readonly AccountService $accountService,
-        private readonly CookieService $cookieService,
-    ) {}
+    private readonly AccountService $accountService;
 
+    /**
+     * Initializes the controller with the current user.
+     */
+    public function __construct(
+        AccountServiceFactory $accountServiceFactory,
+        private readonly CookieService $cookieService,
+    ) {
+        parent::__construct();
+
+        $this->accountService = $accountServiceFactory->make($this->user);
+    }
+
+    /**
+     * Creates an account for the current user.
+     */
     public function store(CreateAccountRequest $request): JsonResponse
     {
-        $user = Auth::guard('jwt')->user();
-
-        if ($user === null) {
-            abort(Response::HTTP_UNAUTHORIZED);
-        }
-
-        $existing = $this->accountService->getForUserOrNull($user);
+        $existing = $this->accountService->getOrNull();
 
         if ($existing !== null) {
             return response()->json([
@@ -39,55 +44,45 @@ final class AccountController extends Controller
             ], Response::HTTP_CONFLICT);
         }
 
-        $account = $this->accountService->createForUser(
-            $user,
+        $account = $this->accountService->create(
             AccountCreateDto::fromValidated($request->validated())
         );
 
         return response()->json(AccountDto::fromModel($account)->toArray(), Response::HTTP_CREATED);
     }
 
-    public function show(Request $request): JsonResponse
+    /**
+     * Returns the current user account.
+     */
+    public function show(): JsonResponse
     {
-        $user = Auth::guard('jwt')->user();
-
-        if ($user === null) {
-            abort(Response::HTTP_UNAUTHORIZED);
-        }
-
-        $account = $this->accountService->getForUserOrFail($user);
+        $account = $this->accountService->getOrFail();
 
         return response()->json(AccountDto::fromModel($account)->toArray());
     }
 
+    /**
+     * Updates the current user account.
+     */
     public function update(UpdateAccountRequest $request): JsonResponse
     {
-        $user = Auth::guard('jwt')->user();
-
-        if ($user === null) {
-            abort(Response::HTTP_UNAUTHORIZED);
-        }
-
-        $account = $this->accountService->updateForUser($user, $request->validated());
+        $account = $this->accountService->update($request->validated());
 
         return response()->json([
             'status' => 'updated',
         ]);
     }
 
-    public function destroy(Request $request): JsonResponse
+    /**
+     * Deletes the current user account.
+     */
+    public function destroy(): JsonResponse
     {
-        $user = Auth::guard('jwt')->user();
-
-        if ($user === null) {
-            abort(Response::HTTP_UNAUTHORIZED);
-        }
-
         $response = response()->json([
             'status' => 'account_deleted',
         ]);
 
-        $this->accountService->deleteAccountAndUser($user);
+        $this->accountService->deleteAccountAndUser();
 
         $this->cookieService->clearAuthCookies($response);
 

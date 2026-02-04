@@ -8,11 +8,20 @@ use App\Auth\Guards\JwtGuard;
 use App\Auth\Services\AuthService;
 use App\Auth\Services\CookieService;
 use App\Auth\Services\JwtService;
+use App\DiagnosticReport\Policies\DiagnosticReportPolicy;
+use App\Models\DiagnosticReport;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 
 final class AuthServiceProvider extends ServiceProvider
 {
+    /**
+     * @var array<class-string, class-string>
+     */
+    protected $policies = [
+        DiagnosticReport::class => DiagnosticReportPolicy::class,
+    ];
+
     public function register(): void
     {
         $this->app->singleton(JwtService::class, function () {

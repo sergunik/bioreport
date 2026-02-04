@@ -13,10 +13,20 @@ use LogicException;
 
 final readonly class AccountService
 {
-    public function createForUser(User $user, AccountCreateDto $data): Account
+    /**
+     * Creates an account for the current user.
+     */
+    public function __construct(
+        private User $user,
+    ) {}
+
+    /**
+     * Creates an account for the current user.
+     */
+    public function create(AccountCreateDto $data): Account
     {
         $account = Account::query()->create([
-            'user_id' => $user->id,
+            'user_id' => $this->user->id,
             'nickname' => $data->nickname,
             'date_of_birth' => $data->dateOfBirth,
             'sex' => $data->sex,
@@ -24,9 +34,9 @@ final readonly class AccountService
             'timezone' => $data->timezone,
         ]);
 
-        if ((string) $account->user_id !== (string) $user->id) {
+        if ((string) $account->user_id !== (string) $this->user->id) {
             Log::error('Account created with mismatched user_id', [
-                'expected_user_id' => $user->id,
+                'expected_user_id' => $this->user->id,
                 'actual_user_id' => $account->user_id,
             ]);
 
@@ -36,13 +46,16 @@ final readonly class AccountService
         return $account;
     }
 
-    public function getForUserOrFail(User $user): Account
+    /**
+     * Returns the account for the current user or throws.
+     */
+    public function getOrFail(): Account
     {
-        $account = Account::query()->where('user_id', $user->id)->first();
+        $account = Account::query()->where('user_id', $this->user->id)->first();
 
         if ($account === null) {
             Log::error('Missing account for existing user', [
-                'user_id' => $user->id,
+                'user_id' => $this->user->id,
             ]);
 
             throw new LogicException('Account not found for user');
@@ -51,17 +64,20 @@ final readonly class AccountService
         return $account;
     }
 
-    public function getForUserOrNull(User $user): ?Account
+    /**
+     * Returns the account for the current user or null.
+     */
+    public function getOrNull(): ?Account
     {
-        return Account::query()->where('user_id', $user->id)->first();
+        return Account::query()->where('user_id', $this->user->id)->first();
     }
 
     /**
-     * @param  array{nickname?: string|null, language?: string, timezone?: string}  $data
+     * Updates mutable fields for the current user account.
      */
-    public function updateForUser(User $user, array $data): Account
+    public function update(array $data): Account
     {
-        $account = $this->getForUserOrFail($user);
+        $account = $this->getOrFail();
 
         $account->fill($data);
         $account->save();
@@ -69,16 +85,19 @@ final readonly class AccountService
         return $account;
     }
 
-    public function deleteAccountAndUser(User $user): void
+    /**
+     * Deletes the current user account and all user data.
+     */
+    public function deleteAccountAndUser(): void
     {
-        $account = $this->getForUserOrFail($user);
+        $account = $this->getOrFail();
 
         $account->delete();
 
         RefreshToken::query()
-            ->where('user_id', $user->id)
+            ->where('user_id', $this->user->id)
             ->delete();
 
-        $user->delete();
+        $this->user->delete();
     }
 }
