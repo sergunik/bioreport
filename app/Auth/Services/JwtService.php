@@ -58,14 +58,14 @@ final readonly class JwtService
     {
         $payload = $this->decodeAndValidate($token, self::CLAIM_TYPE_ACCESS);
 
-        return $payload !== null ? $payload->sub : null;
+        return $payload !== null ? (string) $payload->sub : null;
     }
 
     public function validateRefreshToken(string $token): ?string
     {
         $payload = $this->decodeAndValidate($token, self::CLAIM_TYPE_REFRESH);
 
-        return $payload !== null ? $payload->sub : null;
+        return $payload !== null ? (string) $payload->sub : null;
     }
 
     private function decodeAndValidate(string $token, string $expectedType): ?stdClass

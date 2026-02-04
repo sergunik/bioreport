@@ -3,15 +3,15 @@
     "name": "bioreport/bioreport",
     "type": "project",
     "description": "BioReport API — privacy-first medical records platform.",
-    "keywords": ["laravel", "api", "mongodb", "medical"],
+    "keywords": ["laravel", "api", "postgresql", "medical"],
     "license": "AGPL-3.0-or-later",
     "require": {
         "php": "^8.2",
+        "ext-pdo_pgsql": "*",
         "dedoc/scramble": "^0.13.11",
         "firebase/php-jwt": "^7.0",
         "laravel/framework": "^12.0",
-        "laravel/tinker": "^2.10.1",
-        "mongodb/laravel-mongodb": "^5.0"
+        "laravel/tinker": "^2.10.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -10,19 +10,24 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::connection('mongodb')->create('users', function (Blueprint $table) {
-            $table->unique('email');
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('email')->unique();
+            $table->string('password');
+            $table->timestamps();
         });
 
-        Schema::connection('mongodb')->create('password_reset_tokens', function (Blueprint $table) {
-            $table->index('email');
-            $table->index('token');
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->id();
+            $table->string('email')->unique();
+            $table->string('token')->index();
+            $table->timestamp('created_at');
         });
     }
 
     public function down(): void
     {
-        Schema::connection('mongodb')->dropIfExists('users');
-        Schema::connection('mongodb')->dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

@@ -12,7 +12,7 @@ The system solves common problems related to medical data fragmentation across d
 
 - PHP 8.4
 - Docker & Docker Compose (for running the stack)
-- MongoDB (via Docker or local)
+- PostgreSQL (via Docker or local)
 
 ## Setup
 
@@ -22,10 +22,8 @@ docker-compose up -d && docker-compose exec app composer setup
 
 ## Running
 
-- **Web:** Nginx serves the app. With Docker: `http://localhost:8000`
-- **Base URL:** `http://localhost:8000/api`
-- **Health check:** `http://localhost:8000/api/health`
-- **Database:** MongoDB at `mongodb://mongo:27017` (inside Docker) or `mongodb://localhost:27017` (local)
+- **Base URL:** `http://localhost/api`
+- **Health check:** `http://localhost/api/health`
 - **Logs:** `storage/logs/laravel.log`
 
 ## Commands

@@ -6,15 +6,11 @@ RUN apk add --no-cache \
     icu-dev \
     libzip-dev \
     oniguruma-dev \
+    postgresql-dev \
     curl \
     nano
 
-RUN docker-php-ext-install intl mbstring opcache pcntl zip
-
-RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS openssl-dev \
-    && pecl install mongodb-2.0.0 \
-    && docker-php-ext-enable mongodb \
-    && apk del .build-deps
+RUN docker-php-ext-install intl mbstring opcache pcntl zip pdo_pgsql
 
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/99-bioreport.ini
 
