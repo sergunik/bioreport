@@ -48,7 +48,6 @@ final class AuthServiceProvider extends ServiceProvider
 
             return new AuthService(
                 $this->app->make(JwtService::class),
-                $this->app->make(CookieService::class),
                 $refreshTtlDays,
             );
         });
