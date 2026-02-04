@@ -25,23 +25,21 @@ services:
     volumes:
       - .:/var/www
       - ./docker/php/php.ini:/usr/local/etc/php/conf.d/99-bioreport.ini:ro
-    environment:
-      MONGO_DB_URI: mongodb://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@mongodb:${MONGO_DB_PORT}/${MONGO_DB_DATABASE}?authSource=admin
     depends_on:
-      - mongodb
+      - postgres
     networks:
       - bioreport
     restart: unless-stopped
 
-  mongodb:
-    image: mongo:8
-    container_name: bioreport-mongodb
+  postgres:
+    image: postgres:18.1
+    container_name: bioreport-postgres
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_DB_DATABASE}
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - mongodb_data:/data/db
+      - postgres_data:/var/lib/postgresql
     networks:
       - bioreport
     restart: unless-stopped
@@ -51,4 +49,4 @@ networks:
     driver: bridge
 
 volumes:
-  mongodb_data:
+  postgres_data:

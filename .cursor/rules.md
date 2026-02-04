@@ -26,7 +26,7 @@
   - No magic methods
   - All dependencies injected via constructor DI only
 - Repositories:
-  - MongoDB access only
+  - PostgreSQL access only
   - All query logic must live inside repositories
   - No database access outside repositories
 - DTOs:

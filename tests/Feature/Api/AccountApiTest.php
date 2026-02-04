@@ -7,13 +7,13 @@ namespace Tests\Feature\Api;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use Tests\RefreshMongoDatabase;
 use Tests\TestCase;
 
 final class AccountApiTest extends TestCase
 {
-    use RefreshMongoDatabase;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {

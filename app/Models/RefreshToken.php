@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use MongoDB\Laravel\Eloquent\Model;
-use MongoDB\Laravel\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class RefreshToken extends Model
 {
-    protected $connection = 'mongodb';
-
-    protected $collection = 'refresh_tokens';
-
     /**
      * @var list<string>
      */

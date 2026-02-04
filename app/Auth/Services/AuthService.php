@@ -15,7 +15,6 @@ final readonly class AuthService
 {
     public function __construct(
         private JwtService $jwtService,
-        private CookieService $cookieService,
         private int $refreshTtlDays,
     ) {}
 
@@ -104,7 +103,7 @@ final readonly class AuthService
 
     public function userToDto(User $user): UserDto
     {
-        return new UserDto($user->id, $user->email);
+        return new UserDto((string) $user->id, $user->email);
     }
 
     private function storeRefreshToken(User $user, string $token): void

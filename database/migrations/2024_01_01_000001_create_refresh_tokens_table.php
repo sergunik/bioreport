@@ -10,14 +10,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::connection('mongodb')->create('refresh_tokens', function (Blueprint $table) {
-            $table->index('user_id');
-            $table->index('token_hash');
+        Schema::create('refresh_tokens', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->string('token_hash')->index();
+            $table->timestamp('expires_at');
+            $table->timestamp('revoked_at')->nullable();
+            $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::connection('mongodb')->dropIfExists('refresh_tokens');
+        Schema::dropIfExists('refresh_tokens');
     }
 };

@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
 final class PasswordResetToken extends Model
 {
-    protected $connection = 'mongodb';
-
-    protected $collection = 'password_reset_tokens';
-
     public $timestamps = false;
 
     /**

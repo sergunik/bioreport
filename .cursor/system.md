@@ -13,7 +13,7 @@ Key Principles:
 
 Tech Stack:
 - Backend: Laravel 12 (PHP 8.4)
-- Database: MongoDB 8 (document-based, schema-controlled)
+- Database: PostgreSQL 18.1 (relational, schema-controlled)
 - Infrastructure: Docker Compose (Alpine Linux)
 - AI: Optional external APIs (OpenAI, Gemini, etc), user-triggered only
 

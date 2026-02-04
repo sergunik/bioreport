@@ -10,13 +10,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::connection('mongodb')->create('accounts', function (Blueprint $table): void {
+        Schema::create('accounts', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->string('nickname')->nullable();
+            $table->date('date_of_birth');
+            $table->string('sex', 16);
+            $table->string('language', 2)->nullable();
+            $table->string('timezone', 64)->nullable();
+            $table->timestamps();
             $table->unique('user_id');
         });
     }
 
     public function down(): void
     {
-        Schema::connection('mongodb')->dropIfExists('accounts');
+        Schema::dropIfExists('accounts');
     }
 };
