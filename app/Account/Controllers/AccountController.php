@@ -66,7 +66,7 @@ final class AccountController extends AuthenticatedController
      */
     public function update(UpdateAccountRequest $request): JsonResponse
     {
-        $account = $this->accountService->update($request->validated());
+        $this->accountService->update($request->validated());
 
         return response()->json([
             'status' => 'updated',
