@@ -50,7 +50,6 @@ final class DiagnosticReport extends Model
             $builder->where('diagnostic_reports.user_id', $userId);
         });
     }
-    }
 
     /**
      * @return BelongsTo<User, $this>
