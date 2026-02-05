@@ -43,10 +43,13 @@ final class DiagnosticReport extends Model
     {
         self::addGlobalScope('user', function (Builder $builder): void {
             $userId = Auth::guard('jwt')->id();
-            if ($userId !== null) {
-                $builder->where('diagnostic_reports.user_id', $userId);
+            if ($userId === null) {
+                $builder->whereRaw('1 = 0');
+                return;
             }
+            $builder->where('diagnostic_reports.user_id', $userId);
         });
+    }
     }
 
     /**
