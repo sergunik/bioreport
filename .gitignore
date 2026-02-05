@@ -19,8 +19,6 @@
 /storage/*.key
 /storage/pail
 /vendor
-/docs/openapi/openapi.yaml
-/docs/openapi/openapi.json
 Homestead.json
 Homestead.yaml
 Thumbs.db

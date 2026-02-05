@@ -9,6 +9,7 @@ use App\Auth\Controllers\LogoutController;
 use App\Auth\Controllers\RefreshController;
 use App\Auth\Controllers\RegisterController;
 use App\Auth\Controllers\ResetPasswordController;
+use App\DiagnosticReport\Controllers\DiagnosticReportController;
 use App\System\Controllers\HealthController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,4 +33,12 @@ Route::middleware('auth:jwt')->prefix('account')->group(function (): void {
     Route::get('/', [AccountController::class, 'show']);
     Route::patch('/', [AccountController::class, 'update']);
     Route::delete('/', [AccountController::class, 'destroy']);
+});
+
+Route::middleware('auth:jwt')->prefix('diagnostic-reports')->group(function (): void {
+    Route::post('/', [DiagnosticReportController::class, 'store']);
+    Route::get('/', [DiagnosticReportController::class, 'index']);
+    Route::get('/{id}', [DiagnosticReportController::class, 'show']);
+    Route::patch('/{id}', [DiagnosticReportController::class, 'update']);
+    Route::delete('/{id}', [DiagnosticReportController::class, 'destroy']);
 });
