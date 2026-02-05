@@ -14,10 +14,7 @@ final class StoreDiagnosticReportRequestTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @return array<string, array<int, string>>
-     */
-    /**
-     * @return array<string, array<int, string>>
+     * `@return` array<string, array<int, string>>
      */
     private function rules(): array
     {
