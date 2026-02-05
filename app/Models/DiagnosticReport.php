@@ -45,6 +45,7 @@ final class DiagnosticReport extends Model
             $userId = Auth::guard('jwt')->id();
             if ($userId === null) {
                 $builder->whereRaw('1 = 0');
+
                 return;
             }
             $builder->where('diagnostic_reports.user_id', $userId);
