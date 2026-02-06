@@ -25,11 +25,8 @@ Or:
 make up && make setup
 ```
 
-3. Load frontend from latest biorepost-canvas repository:
+3. Load frontend from latest bioreport-canvas repository:
 
-```bash
-chmod +x ./scripts/fetch-frontend.sh && ./scripts/fetch-frontend.sh
-```
 
 Or:
 
