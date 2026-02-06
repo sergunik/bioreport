@@ -5,5 +5,5 @@ composer test
 echo "Running linters..."
 composer lint:test
 echo "Pre-push checks passed."
-composer openapi:generate
+composer api
 echo "OpenAPI documentation generated."

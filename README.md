@@ -22,9 +22,14 @@ docker-compose up -d && docker-compose exec app composer setup
 
 ## Running
 
-- **Base URL:** `http://localhost/api`
+Single-domain deployment: the same origin serves the frontend and the API.
+
+- **Application (SPA):** `http://localhost/`
+- **API base:** `http://localhost/api`
 - **Health check:** `http://localhost/api/health`
 - **Logs:** `storage/logs/laravel.log`
+
+See [docs/self-host.md](docs/self-host.md) for how the frontend is included and how to deploy.
 
 ## Commands
 
