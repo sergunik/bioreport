@@ -12,6 +12,8 @@ final class HealthController extends Controller
 {
     /**
      * Returns health check payload: service name, environment, version, and current timestamp (ISO 8601).
+     *
+     * @unauthenticated
      */
     public function index(): JsonResponse
     {

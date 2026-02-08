@@ -15,6 +15,9 @@ final class LogoutController extends Controller
         private readonly LogoutUserAction $action,
     ) {}
 
+    /**
+     * @unauthenticated
+     */
     public function __invoke(Request $request): JsonResponse
     {
         $refreshToken = $request->cookie(config('auth_tokens.cookies.refresh_name'));

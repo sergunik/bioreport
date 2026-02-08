@@ -17,6 +17,9 @@ final class RegisterController extends Controller
         private readonly RegisterUserAction $action,
     ) {}
 
+    /**
+     * @unauthenticated
+     */
     public function __invoke(RegisterRequest $request): JsonResponse
     {
         /** @var JsonResponse $response */

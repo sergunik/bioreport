@@ -9,6 +9,11 @@
             "url": "http://localhost/api"
         }
     ],
+    "security": [
+        {
+            "http": []
+        }
+    ],
     "paths": {
         "/account": {
             "post": {
@@ -630,7 +635,8 @@
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     }
-                }
+                },
+                "security": []
             }
         },
         "/health": {
@@ -671,7 +677,8 @@
                             }
                         }
                     }
-                }
+                },
+                "security": []
             }
         },
         "/auth/login": {
@@ -733,7 +740,8 @@
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     }
-                }
+                },
+                "security": []
             }
         },
         "/auth/logout": {
@@ -764,7 +772,8 @@
                             }
                         }
                     }
-                }
+                },
+                "security": []
             }
         },
         "/auth/refresh": {
@@ -834,7 +843,8 @@
                             }
                         }
                     }
-                }
+                },
+                "security": []
             }
         },
         "/auth/register": {
@@ -887,7 +897,8 @@
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     }
-                }
+                },
+                "security": []
             }
         },
         "/auth/password/reset": {
@@ -949,11 +960,19 @@
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     }
-                }
+                },
+                "security": []
             }
         }
     },
     "components": {
+        "securitySchemes": {
+            "http": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        },
         "schemas": {
             "CreateAccountRequest": {
                 "type": "object",

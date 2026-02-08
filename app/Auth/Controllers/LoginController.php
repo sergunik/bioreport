@@ -16,6 +16,9 @@ final class LoginController extends Controller
         private readonly LoginUserAction $action,
     ) {}
 
+    /**
+     * @unauthenticated
+     */
     public function __invoke(LoginRequest $request): JsonResponse
     {
         $response = response()->json();

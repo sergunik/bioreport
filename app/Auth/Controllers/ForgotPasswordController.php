@@ -15,6 +15,9 @@ final class ForgotPasswordController extends Controller
         private readonly ForgotPasswordAction $action,
     ) {}
 
+    /**
+     * @unauthenticated
+     */
     public function __invoke(ForgotPasswordRequest $request): JsonResponse
     {
         $email = $request->validated('email');
