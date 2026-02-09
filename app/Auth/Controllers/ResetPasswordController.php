@@ -7,6 +7,7 @@ namespace App\Auth\Controllers;
 use App\Auth\Actions\ResetPasswordAction;
 use App\Auth\Requests\ResetPasswordRequest;
 use App\Http\Controllers\Controller;
+use Dedoc\Scramble\Attributes\Response;
 use Illuminate\Http\JsonResponse;
 
 final class ResetPasswordController extends Controller
@@ -18,6 +19,7 @@ final class ResetPasswordController extends Controller
     /**
      * @unauthenticated
      */
+    #[Response(200, 'Password reset', examples: [['user' => '1']])]
     public function __invoke(ResetPasswordRequest $request): JsonResponse
     {
         $data = $request->validated();

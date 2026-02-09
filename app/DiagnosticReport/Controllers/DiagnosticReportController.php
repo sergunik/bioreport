@@ -11,23 +11,12 @@ use App\DiagnosticReport\Resources\DiagnosticReportResource;
 use App\DiagnosticReport\Services\DiagnosticReportService;
 use App\DiagnosticReport\Services\DiagnosticReportServiceFactory;
 use App\Http\Controllers\AuthenticatedController;
+use Dedoc\Scramble\Attributes\Response as ScrambleResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Diagnostic reports and observations CRUD.
- *
- * OpenAPI examples:
- *   POST /api/diagnostic-reports
- *   Request: { "report_type": "CBC", "notes": "Fasting sample", "observations": [{ "biomarker_name": "Hemoglobin", "biomarker_code": "718-7", "original_value": 14.2, "original_unit": "g/dL", "normalized_value": 14.2, "normalized_unit": "g/dL", "reference_range_min": 12, "reference_range_max": 16, "reference_unit": "g/dL" }] }
- *   Response: 201 with DiagnosticReportResource
- *
- *   PATCH /api/diagnostic-reports/{id}
- *   Request: { "observations": [{ "id": 42, "biomarker_name": "Hemoglobin", "original_value": 13.8 }, { "biomarker_name": "Hematocrit", "biomarker_code": "4544-3", "original_value": 42.1, "original_unit": "%" }] }
- *   Response: 200 with DiagnosticReportResource
- */
 final class DiagnosticReportController extends AuthenticatedController
 {
     private readonly DiagnosticReportService $diagnosticReportService;
@@ -46,6 +35,7 @@ final class DiagnosticReportController extends AuthenticatedController
     /**
      * Creates a diagnostic report for the current user.
      */
+    #[ScrambleResponse(201, 'Created report', examples: [['id' => 1, 'report_type' => 'CBC', 'source' => 'lab', 'notes' => 'Fasting sample', 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z', 'observations' => [['id' => 1, 'biomarker_name' => 'Hemoglobin', 'biomarker_code' => '718-7', 'original_value' => 14.2, 'original_unit' => 'g/dL', 'normalized_value' => 14.2, 'normalized_unit' => 'g/dL', 'reference_range_min' => 12.0, 'reference_range_max' => 16.0, 'reference_unit' => 'g/dL']]]])]
     public function store(StoreDiagnosticReportRequest $request): JsonResponse
     {
         $dto = CreateDiagnosticReportDto::fromValidated($request->validated());
@@ -60,6 +50,7 @@ final class DiagnosticReportController extends AuthenticatedController
     /**
      * Lists diagnostic reports for the current user.
      */
+    #[ScrambleResponse(200, 'List of reports', examples: [['data' => [['id' => 1, 'report_type' => 'CBC', 'source' => 'lab', 'notes' => null, 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z', 'observations' => []]]]])]
     public function index(Request $request): JsonResponse
     {
         $reports = $this->diagnosticReportService->list();
@@ -72,6 +63,7 @@ final class DiagnosticReportController extends AuthenticatedController
     /**
      * Returns a single diagnostic report for the current user.
      */
+    #[ScrambleResponse(200, 'Single report', examples: [['id' => 1, 'report_type' => 'CBC', 'source' => 'lab', 'notes' => null, 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z', 'observations' => [['id' => 1, 'biomarker_name' => 'Hemoglobin', 'biomarker_code' => '718-7', 'original_value' => 14.2, 'original_unit' => 'g/dL', 'normalized_value' => null, 'normalized_unit' => null, 'reference_range_min' => null, 'reference_range_max' => null, 'reference_unit' => null]]]])]
     public function show(Request $request, int $id): JsonResponse
     {
         $report = $this->diagnosticReportService->getById($id);
@@ -85,6 +77,7 @@ final class DiagnosticReportController extends AuthenticatedController
     /**
      * Updates a diagnostic report for the current user.
      */
+    #[ScrambleResponse(200, 'Updated report', examples: [['id' => 1, 'report_type' => 'CBC', 'source' => 'lab', 'notes' => 'Updated', 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:30:00.000000Z', 'observations' => []]])]
     public function update(UpdateDiagnosticReportRequest $request, int $id): JsonResponse
     {
         try {

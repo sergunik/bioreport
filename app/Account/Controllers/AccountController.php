@@ -12,6 +12,7 @@ use App\Account\Services\AccountService;
 use App\Account\Services\AccountServiceFactory;
 use App\Auth\Services\CookieService;
 use App\Http\Controllers\AuthenticatedController;
+use Dedoc\Scramble\Attributes\Response as ScrambleResponse;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,6 +35,7 @@ final class AccountController extends AuthenticatedController
     /**
      * Creates an account for the current user.
      */
+    #[ScrambleResponse(201, 'Created account', examples: [['id' => '1', 'nickname' => null, 'date_of_birth' => '1990-01-15', 'sex' => 'male', 'language' => 'uk', 'timezone' => 'Europe/Kyiv']])]
     public function store(CreateAccountRequest $request): JsonResponse
     {
         $existing = $this->accountService->getOrNull();
@@ -54,6 +56,7 @@ final class AccountController extends AuthenticatedController
     /**
      * Returns the current user account.
      */
+    #[ScrambleResponse(200, 'Current account', examples: [['id' => '1', 'nickname' => 'John', 'date_of_birth' => '1990-01-15', 'sex' => 'male', 'language' => 'uk', 'timezone' => 'Europe/Kyiv']])]
     public function show(): JsonResponse
     {
         $account = $this->accountService->getOrFail();
@@ -64,6 +67,7 @@ final class AccountController extends AuthenticatedController
     /**
      * Updates the current user account.
      */
+    #[ScrambleResponse(200, 'Updated', examples: [['status' => 'updated']])]
     public function update(UpdateAccountRequest $request): JsonResponse
     {
         $this->accountService->update($request->validated());
@@ -76,6 +80,7 @@ final class AccountController extends AuthenticatedController
     /**
      * Deletes the current user account.
      */
+    #[ScrambleResponse(200, 'Account deleted', examples: [['status' => 'account_deleted']])]
     public function destroy(): JsonResponse
     {
         $response = response()->json([

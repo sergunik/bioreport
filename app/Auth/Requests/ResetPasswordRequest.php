@@ -19,7 +19,9 @@ final class ResetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
+            /** @example "reset-token-from-email" */
             'token' => ['required', 'string'],
+            /** @example "NewSecureP@ssw0rd123" */
             'password' => ['required', 'string', 'min:12'],
         ];
     }

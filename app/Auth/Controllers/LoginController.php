@@ -8,6 +8,7 @@ use App\Auth\Actions\LoginUserAction;
 use App\Auth\DTOs\CredentialsDto;
 use App\Auth\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
+use Dedoc\Scramble\Attributes\Response;
 use Illuminate\Http\JsonResponse;
 
 final class LoginController extends Controller
@@ -19,6 +20,7 @@ final class LoginController extends Controller
     /**
      * @unauthenticated
      */
+    #[Response(200, 'Authenticated user', examples: [['user' => ['id' => '1', 'email' => 'user@example.com']]])]
     public function __invoke(LoginRequest $request): JsonResponse
     {
         $response = response()->json();

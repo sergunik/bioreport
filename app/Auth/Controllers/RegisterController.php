@@ -8,6 +8,7 @@ use App\Auth\Actions\RegisterUserAction;
 use App\Auth\DTOs\CredentialsDto;
 use App\Auth\Requests\RegisterRequest;
 use App\Http\Controllers\Controller;
+use Dedoc\Scramble\Attributes\Response as ScrambleResponse;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,6 +21,7 @@ final class RegisterController extends Controller
     /**
      * @unauthenticated
      */
+    #[ScrambleResponse(201, 'Created user', examples: [['user' => ['id' => '1', 'email' => 'user@example.com']]])]
     public function __invoke(RegisterRequest $request): JsonResponse
     {
         /** @var JsonResponse $response */

@@ -6,6 +6,7 @@ namespace App\Auth\Controllers;
 
 use App\Auth\Actions\RefreshTokenAction;
 use App\Http\Controllers\Controller;
+use Dedoc\Scramble\Attributes\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -18,6 +19,7 @@ final class RefreshController extends Controller
     /**
      * @unauthenticated
      */
+    #[Response(200, 'New tokens issued', examples: [['status' => 'ok']])]
     public function __invoke(Request $request): JsonResponse
     {
         $refreshToken = $request->cookie(config('auth_tokens.cookies.refresh_name'));
