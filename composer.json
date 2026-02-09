@@ -39,7 +39,7 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate",
             "@php scripts/generate-jwt-secret.php",
-            "@php artisan migrate --force"
+            "@php artisan migrate --seed --force"
         ],
         "test": [
             "@php artisan config:clear --ansi",

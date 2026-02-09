@@ -15,6 +15,9 @@ final class RefreshController extends Controller
         private readonly RefreshTokenAction $action,
     ) {}
 
+    /**
+     * @unauthenticated
+     */
     public function __invoke(Request $request): JsonResponse
     {
         $refreshToken = $request->cookie(config('auth_tokens.cookies.refresh_name'));

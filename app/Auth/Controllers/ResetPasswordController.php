@@ -15,6 +15,9 @@ final class ResetPasswordController extends Controller
         private readonly ResetPasswordAction $action,
     ) {}
 
+    /**
+     * @unauthenticated
+     */
     public function __invoke(ResetPasswordRequest $request): JsonResponse
     {
         $data = $request->validated();
