@@ -19,6 +19,7 @@ final class ForgotPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
+            /** @example "user@example.com" */
             'email' => ['required', 'string', 'email'],
         ];
     }

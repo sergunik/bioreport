@@ -19,10 +19,15 @@ final class CreateAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
+            /** @example "male" */
             'sex' => ['required', 'string', 'in:male,female'],
+            /** @example "1990-01-15" */
             'date_of_birth' => ['required', 'date_format:Y-m-d', 'before:today'],
+            /** @example "John" */
             'nickname' => ['sometimes', 'nullable', 'string', 'max:255'],
+            /** @example "uk" */
             'language' => ['sometimes', 'string', 'size:2'],
+            /** @example "Europe/Kyiv" */
             'timezone' => ['sometimes', 'string', 'timezone'],
         ];
     }

@@ -19,8 +19,11 @@ final class UpdateAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
+            /** @example "John" */
             'nickname' => ['sometimes', 'nullable', 'string', 'max:255'],
+            /** @example "uk" */
             'language' => ['sometimes', 'string', 'size:2'],
+            /** @example "Europe/Kyiv" */
             'timezone' => ['sometimes', 'string', 'timezone'],
             'user_id' => ['prohibited'],
             'sex' => ['prohibited'],

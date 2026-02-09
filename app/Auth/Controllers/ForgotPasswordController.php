@@ -7,6 +7,7 @@ namespace App\Auth\Controllers;
 use App\Auth\Actions\ForgotPasswordAction;
 use App\Auth\Requests\ForgotPasswordRequest;
 use App\Http\Controllers\Controller;
+use Dedoc\Scramble\Attributes\Response;
 use Illuminate\Http\JsonResponse;
 
 final class ForgotPasswordController extends Controller
@@ -18,6 +19,7 @@ final class ForgotPasswordController extends Controller
     /**
      * @unauthenticated
      */
+    #[Response(200, 'Reset email sent', examples: [['status' => 'ok']])]
     public function __invoke(ForgotPasswordRequest $request): JsonResponse
     {
         $email = $request->validated('email');
