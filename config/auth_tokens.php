@@ -15,7 +15,7 @@ return [
         'refresh_name' => env('AUTH_REFRESH_COOKIE', 'refresh_token'),
         'path' => '/',
         'domain' => env('AUTH_COOKIE_DOMAIN'),
-        'secure' => env('AUTH_COOKIE_SECURE', false),
+        'secure' => env('AUTH_COOKIE_SECURE', true),
         'http_only' => true,
         'same_site' => 'lax',
     ],
