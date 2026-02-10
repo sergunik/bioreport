@@ -33,6 +33,7 @@ final class StoreDiagnosticReportRequestTest extends TestCase
     public function test_valid_payload_passes(): void
     {
         $v = Validator::make([
+            'title' => 'CBC Panel',
             'notes' => 'Fasting sample',
         ], $this->rules());
         self::assertFalse($v->fails());

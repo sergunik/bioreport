@@ -128,6 +128,29 @@ final class ObservationApiTest extends TestCase
         $response->assertStatus(404);
     }
 
+    public function test_update_returns_404_when_not_owner(): void
+    {
+        $owner = User::factory()->create(['email' => 'owner@example.com']);
+        $other = User::factory()->create([
+            'email' => 'other-update@example.com',
+            'password' => Hash::make('StrongPass123!@#'),
+        ]);
+        $report = DiagnosticReport::withoutGlobalScope('user')->create(['user_id' => $owner->id]);
+        $observation = Observation::withoutGlobalScope('user')->create([
+            'user_id' => $owner->id,
+            'diagnostic_report_id' => $report->id,
+            'biomarker_name' => 'Glucose',
+            'value' => 5.2,
+            'unit' => 'mmol/L',
+        ]);
+
+        $response = $this->withAuth($other)->patchJson('/api/observations/'.$observation->id, [
+            'value' => 6.0,
+        ]);
+
+        $response->assertStatus(404);
+    }
+
     public function test_update_observation(): void
     {
         $user = User::factory()->create([

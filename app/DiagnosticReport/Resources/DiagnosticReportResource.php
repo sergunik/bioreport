@@ -17,6 +17,7 @@ final class DiagnosticReportResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'title' => $this->title,
             'notes' => $this->notes,
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),

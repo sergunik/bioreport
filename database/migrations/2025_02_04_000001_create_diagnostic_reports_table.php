@@ -13,6 +13,7 @@ return new class extends Migration
         Schema::create('diagnostic_reports', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('title')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
         });

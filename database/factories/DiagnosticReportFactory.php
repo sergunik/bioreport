@@ -20,6 +20,7 @@ final class DiagnosticReportFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
+            'title' => fake()->optional(0.7)->sentence(3),
             'notes' => fake()->optional(0.3)->sentence(),
         ];
     }

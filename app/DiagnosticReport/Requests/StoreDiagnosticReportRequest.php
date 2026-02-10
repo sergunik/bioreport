@@ -16,6 +16,7 @@ final class StoreDiagnosticReportRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'title' => ['sometimes', 'nullable', 'string', 'max:255'],
             'notes' => ['sometimes', 'nullable', 'string'],
         ];
     }

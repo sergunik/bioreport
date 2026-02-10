@@ -55,27 +55,7 @@ final readonly class ObservationService
             throw new InvalidArgumentException('Observation not found');
         }
 
-        if (array_key_exists('biomarker_name', $validated)) {
-            $observation->biomarker_name = $validated['biomarker_name'];
-        }
-        if (array_key_exists('biomarker_code', $validated)) {
-            $observation->biomarker_code = $validated['biomarker_code'];
-        }
-        if (array_key_exists('value', $validated)) {
-            $observation->value = $validated['value'];
-        }
-        if (array_key_exists('unit', $validated)) {
-            $observation->unit = $validated['unit'];
-        }
-        if (array_key_exists('reference_range_min', $validated)) {
-            $observation->reference_range_min = $validated['reference_range_min'];
-        }
-        if (array_key_exists('reference_range_max', $validated)) {
-            $observation->reference_range_max = $validated['reference_range_max'];
-        }
-        if (array_key_exists('reference_unit', $validated)) {
-            $observation->reference_unit = $validated['reference_unit'];
-        }
+        $observation->fill($validated);
 
         if ($observation->isDirty()) {
             $observation->save();
@@ -87,8 +67,10 @@ final readonly class ObservationService
     public function delete(int $id): void
     {
         $observation = $this->getById($id);
-        if ($observation !== null) {
-            $observation->delete();
+        if ($observation === null) {
+            throw new InvalidArgumentException('Observation not found');
         }
+
+        $observation->delete();
     }
 }

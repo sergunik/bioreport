@@ -30,6 +30,7 @@ final class UpdateDiagnosticReportRequestTest extends TestCase
     public function test_partial_update_payload_passes(): void
     {
         $v = Validator::make([
+            'title' => 'Updated title',
             'notes' => 'Updated notes',
         ], $this->rules());
         self::assertFalse($v->fails());

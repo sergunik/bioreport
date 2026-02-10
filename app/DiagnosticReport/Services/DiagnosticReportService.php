@@ -20,6 +20,7 @@ final readonly class DiagnosticReportService
     {
         $report = DiagnosticReport::withoutGlobalScope('user')->create([
             'user_id' => $this->user->id,
+            'title' => $dto->title,
             'notes' => $dto->notes,
         ]);
 
@@ -51,6 +52,9 @@ final readonly class DiagnosticReportService
             throw new InvalidArgumentException('Diagnostic report not found');
         }
 
+        if (array_key_exists('title', $validated)) {
+            $report->title = $validated['title'];
+        }
         if (array_key_exists('notes', $validated)) {
             $report->notes = $validated['notes'];
         }

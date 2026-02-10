@@ -83,12 +83,11 @@ final class ObservationController extends AuthenticatedController
     #[ScrambleResponse(204, 'Observation deleted')]
     public function destroy(int $id): JsonResponse
     {
-        $observation = $this->observationService->getById($id);
-        if ($observation === null) {
+        try {
+            $this->observationService->delete($id);
+        } catch (InvalidArgumentException) {
             abort(Response::HTTP_NOT_FOUND);
         }
-
-        $this->observationService->delete($id);
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }

@@ -44,10 +44,12 @@ final class DiagnosticReportApiTest extends TestCase
         ]);
 
         $response = $this->withAuth($user)->postJson('/api/diagnostic-reports', [
+            'title' => 'CBC Panel',
             'notes' => 'Fasting sample, morning draw',
         ]);
 
         $response->assertStatus(201);
+        $response->assertJsonPath('title', 'CBC Panel');
         $response->assertJsonPath('notes', 'Fasting sample, morning draw');
         $response->assertJsonCount(0, 'observations');
 
@@ -121,7 +123,7 @@ final class DiagnosticReportApiTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_update_notes_only(): void
+    public function test_update_title_and_notes(): void
     {
         $user = User::factory()->create([
             'email' => 'report-update@example.com',
@@ -129,17 +131,21 @@ final class DiagnosticReportApiTest extends TestCase
         ]);
         $report = DiagnosticReport::withoutGlobalScope('user')->create([
             'user_id' => $user->id,
+            'title' => 'Original title',
             'notes' => 'Original',
         ]);
 
         $response = $this->withAuth($user)->patchJson('/api/diagnostic-reports/'.$report->id, [
+            'title' => 'Updated title',
             'notes' => 'Updated notes',
         ]);
 
         $response->assertStatus(200);
+        $response->assertJsonPath('title', 'Updated title');
         $response->assertJsonPath('notes', 'Updated notes');
 
         $report->refresh();
+        self::assertSame('Updated title', $report->title);
         self::assertSame('Updated notes', $report->notes);
     }
 
@@ -155,7 +161,7 @@ final class DiagnosticReportApiTest extends TestCase
         ]);
 
         $response = $this->withAuth($other)->patchJson('/api/diagnostic-reports/'.$report->id, [
-            'notes' => 'Updated',
+            'title' => 'Updated',
         ]);
 
         $response->assertStatus(404);
@@ -205,7 +211,7 @@ final class DiagnosticReportApiTest extends TestCase
     public function test_unauthenticated_requests_receive_401(): void
     {
         $this->postJson('/api/diagnostic-reports', [
-            'notes' => 'Some notes',
+            'title' => 'Some title',
         ])->assertStatus(401);
 
         $this->getJson('/api/diagnostic-reports')->assertStatus(401);
