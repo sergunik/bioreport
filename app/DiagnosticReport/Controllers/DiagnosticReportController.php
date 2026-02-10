@@ -35,7 +35,7 @@ final class DiagnosticReportController extends AuthenticatedController
     /**
      * Creates a diagnostic report for the current user.
      */
-    #[ScrambleResponse(201, 'Created report', examples: [['id' => 1, 'report_type' => 'CBC', 'source' => 'lab', 'notes' => 'Fasting sample', 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z', 'observations' => [['id' => 1, 'biomarker_name' => 'Hemoglobin', 'biomarker_code' => '718-7', 'original_value' => 14.2, 'original_unit' => 'g/dL', 'normalized_value' => 14.2, 'normalized_unit' => 'g/dL', 'reference_range_min' => 12.0, 'reference_range_max' => 16.0, 'reference_unit' => 'g/dL']]]])]
+    #[ScrambleResponse(201, 'Created report', examples: [['id' => 1, 'notes' => 'Fasting sample', 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z', 'observations' => []]])]
     public function store(StoreDiagnosticReportRequest $request): JsonResponse
     {
         $dto = CreateDiagnosticReportDto::fromValidated($request->validated());
@@ -50,7 +50,7 @@ final class DiagnosticReportController extends AuthenticatedController
     /**
      * Lists diagnostic reports for the current user.
      */
-    #[ScrambleResponse(200, 'List of reports', examples: [['data' => [['id' => 1, 'report_type' => 'CBC', 'source' => 'lab', 'notes' => null, 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z', 'observations' => []]]]])]
+    #[ScrambleResponse(200, 'List of reports', examples: [['data' => [['id' => 1, 'notes' => null, 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z', 'observations' => []]]]])]
     public function index(Request $request): JsonResponse
     {
         $reports = $this->diagnosticReportService->list();
@@ -63,7 +63,7 @@ final class DiagnosticReportController extends AuthenticatedController
     /**
      * Returns a single diagnostic report for the current user.
      */
-    #[ScrambleResponse(200, 'Single report', examples: [['id' => 1, 'report_type' => 'CBC', 'source' => 'lab', 'notes' => null, 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z', 'observations' => [['id' => 1, 'biomarker_name' => 'Hemoglobin', 'biomarker_code' => '718-7', 'original_value' => 14.2, 'original_unit' => 'g/dL', 'normalized_value' => null, 'normalized_unit' => null, 'reference_range_min' => null, 'reference_range_max' => null, 'reference_unit' => null]]]])]
+    #[ScrambleResponse(200, 'Single report', examples: [['id' => 1, 'notes' => null, 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z', 'observations' => [['id' => 1, 'biomarker_name' => 'Hemoglobin', 'biomarker_code' => '718-7', 'value' => 14.2, 'unit' => 'g/dL', 'reference_range_min' => null, 'reference_range_max' => null, 'reference_unit' => null, 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z']]]])]
     public function show(Request $request, int $id): JsonResponse
     {
         $report = $this->diagnosticReportService->getById($id);
@@ -77,7 +77,7 @@ final class DiagnosticReportController extends AuthenticatedController
     /**
      * Updates a diagnostic report for the current user.
      */
-    #[ScrambleResponse(200, 'Updated report', examples: [['id' => 1, 'report_type' => 'CBC', 'source' => 'lab', 'notes' => 'Updated', 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:30:00.000000Z', 'observations' => []]])]
+    #[ScrambleResponse(200, 'Updated report', examples: [['id' => 1, 'notes' => 'Updated', 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:30:00.000000Z', 'observations' => []]])]
     public function update(UpdateDiagnosticReportRequest $request, int $id): JsonResponse
     {
         try {

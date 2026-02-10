@@ -19,13 +19,13 @@ final class ObservationResource extends JsonResource
             'id' => $this->id,
             'biomarker_name' => $this->biomarker_name,
             'biomarker_code' => $this->biomarker_code,
-            'original_value' => (float) $this->original_value,
-            'original_unit' => $this->original_unit,
-            'normalized_value' => $this->normalized_value !== null ? (float) $this->normalized_value : null,
-            'normalized_unit' => $this->normalized_unit,
+            'value' => (float) $this->value,
+            'unit' => $this->unit,
             'reference_range_min' => $this->reference_range_min !== null ? (float) $this->reference_range_min : null,
             'reference_range_max' => $this->reference_range_max !== null ? (float) $this->reference_range_max : null,
             'reference_unit' => $this->reference_unit,
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

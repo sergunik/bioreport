@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Feature\Api;
 
 use App\Auth\Services\AuthService;
-use App\DiagnosticReport\Enums\ReportSource;
 use App\Models\DiagnosticReport;
 use App\Models\Observation;
 use App\Models\User;
@@ -37,7 +36,7 @@ final class DiagnosticReportApiTest extends TestCase
             ->withUnencryptedCookie(config('auth_tokens.cookies.access_name'), $tokens['access']);
     }
 
-    public function test_store_creates_report_with_observations(): void
+    public function test_store_creates_report_without_observations(): void
     {
         $user = User::factory()->create([
             'email' => 'report-create@example.com',
@@ -45,34 +44,16 @@ final class DiagnosticReportApiTest extends TestCase
         ]);
 
         $response = $this->withAuth($user)->postJson('/api/diagnostic-reports', [
-            'report_type' => 'CBC',
             'notes' => 'Fasting sample, morning draw',
-            'observations' => [
-                [
-                    'biomarker_name' => 'Hemoglobin',
-                    'biomarker_code' => '718-7',
-                    'original_value' => 14.2,
-                    'original_unit' => 'g/dL',
-                    'normalized_value' => 14.2,
-                    'normalized_unit' => 'g/dL',
-                    'reference_range_min' => 12.0,
-                    'reference_range_max' => 16.0,
-                    'reference_unit' => 'g/dL',
-                ],
-            ],
         ]);
 
         $response->assertStatus(201);
-        $response->assertJsonPath('report_type', 'CBC');
         $response->assertJsonPath('notes', 'Fasting sample, morning draw');
-        $response->assertJsonPath('source', 'manual');
-        $response->assertJsonCount(1, 'observations');
-        $response->assertJsonPath('observations.0.biomarker_name', 'Hemoglobin');
-        $response->assertJsonPath('observations.0.original_value', 14.2);
+        $response->assertJsonCount(0, 'observations');
 
         $report = DiagnosticReport::withoutGlobalScope('user')->where('user_id', $user->id)->first();
         self::assertNotNull($report);
-        self::assertSame(1, $report->observations()->count());
+        self::assertSame(0, $report->observations()->count());
     }
 
     public function test_index_returns_only_authenticated_user_reports(): void
@@ -85,20 +66,15 @@ final class DiagnosticReportApiTest extends TestCase
 
         DiagnosticReport::withoutGlobalScope('user')->create([
             'user_id' => $user->id,
-            'report_type' => 'Mine',
-            'source' => ReportSource::Manual,
         ]);
         DiagnosticReport::withoutGlobalScope('user')->create([
             'user_id' => $other->id,
-            'report_type' => 'Other',
-            'source' => ReportSource::Manual,
         ]);
 
         $response = $this->withAuth($user)->getJson('/api/diagnostic-reports');
 
         $response->assertStatus(200);
         $response->assertJsonCount(1, 'data');
-        $response->assertJsonPath('data.0.report_type', 'Mine');
     }
 
     public function test_show_returns_report_when_owner(): void
@@ -109,15 +85,12 @@ final class DiagnosticReportApiTest extends TestCase
         ]);
         $report = DiagnosticReport::withoutGlobalScope('user')->create([
             'user_id' => $user->id,
-            'report_type' => 'CBC',
-            'source' => ReportSource::Manual,
         ]);
 
         $response = $this->withAuth($user)->getJson('/api/diagnostic-reports/'.$report->id);
 
         $response->assertStatus(200);
         $response->assertJsonPath('id', $report->id);
-        $response->assertJsonPath('report_type', 'CBC');
     }
 
     public function test_show_returns_404_when_not_owner(): void
@@ -129,8 +102,6 @@ final class DiagnosticReportApiTest extends TestCase
         ]);
         $report = DiagnosticReport::withoutGlobalScope('user')->create([
             'user_id' => $owner->id,
-            'report_type' => 'CBC',
-            'source' => ReportSource::Manual,
         ]);
 
         $response = $this->withAuth($other)->getJson('/api/diagnostic-reports/'.$report->id);
@@ -150,7 +121,7 @@ final class DiagnosticReportApiTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_update_upserts_observations_and_deletes_missing(): void
+    public function test_update_notes_only(): void
     {
         $user = User::factory()->create([
             'email' => 'report-update@example.com',
@@ -158,52 +129,18 @@ final class DiagnosticReportApiTest extends TestCase
         ]);
         $report = DiagnosticReport::withoutGlobalScope('user')->create([
             'user_id' => $user->id,
-            'report_type' => 'CBC',
-            'source' => ReportSource::Manual,
-        ]);
-        $obs1 = $report->observations()->create([
-            'biomarker_name' => 'Hemoglobin',
-            'biomarker_code' => '718-7',
-            'original_value' => 14.2,
-            'original_unit' => 'g/dL',
-        ]);
-        $obs2 = $report->observations()->create([
-            'biomarker_name' => 'Hematocrit',
-            'biomarker_code' => '4544-3',
-            'original_value' => 42.0,
-            'original_unit' => '%',
+            'notes' => 'Original',
         ]);
 
         $response = $this->withAuth($user)->patchJson('/api/diagnostic-reports/'.$report->id, [
-            'observations' => [
-                [
-                    'id' => $obs1->id,
-                    'biomarker_name' => 'Hemoglobin',
-                    'biomarker_code' => '718-7',
-                    'original_value' => 13.8,
-                    'original_unit' => 'g/dL',
-                    'reference_range_max' => 15.5,
-                ],
-                [
-                    'biomarker_name' => 'New Biomarker',
-                    'original_value' => 5.0,
-                    'original_unit' => 'mmol/L',
-                ],
-            ],
+            'notes' => 'Updated notes',
         ]);
 
         $response->assertStatus(200);
-        $response->assertJsonCount(2, 'observations');
+        $response->assertJsonPath('notes', 'Updated notes');
 
-        $obs1->refresh();
-        self::assertSame(13.8, (float) $obs1->original_value);
-        self::assertSame(15.5, (float) $obs1->reference_range_max);
-
-        self::assertNull(Observation::query()->find($obs2->id));
-
-        $newObs = $report->observations()->where('biomarker_name', 'New Biomarker')->first();
-        self::assertNotNull($newObs);
-        self::assertSame(5.0, (float) $newObs->original_value);
+        $report->refresh();
+        self::assertSame('Updated notes', $report->notes);
     }
 
     public function test_update_returns_404_when_not_owner(): void
@@ -215,12 +152,10 @@ final class DiagnosticReportApiTest extends TestCase
         ]);
         $report = DiagnosticReport::withoutGlobalScope('user')->create([
             'user_id' => $owner->id,
-            'report_type' => 'CBC',
-            'source' => ReportSource::Manual,
         ]);
 
         $response = $this->withAuth($other)->patchJson('/api/diagnostic-reports/'.$report->id, [
-            'report_type' => 'Updated',
+            'notes' => 'Updated',
         ]);
 
         $response->assertStatus(404);
@@ -234,20 +169,20 @@ final class DiagnosticReportApiTest extends TestCase
         ]);
         $report = DiagnosticReport::withoutGlobalScope('user')->create([
             'user_id' => $user->id,
-            'report_type' => 'CBC',
-            'source' => ReportSource::Manual,
         ]);
-        $obs = $report->observations()->create([
+        $obs = Observation::withoutGlobalScope('user')->create([
+            'user_id' => $user->id,
+            'diagnostic_report_id' => $report->id,
             'biomarker_name' => 'Hemoglobin',
-            'original_value' => 14,
-            'original_unit' => 'g/dL',
+            'value' => 14,
+            'unit' => 'g/dL',
         ]);
 
         $response = $this->withAuth($user)->deleteJson('/api/diagnostic-reports/'.$report->id);
 
         $response->assertStatus(204);
         self::assertNull(DiagnosticReport::withoutGlobalScope('user')->find($report->id));
-        self::assertNull(Observation::query()->find($obs->id));
+        self::assertNull(Observation::withoutGlobalScope('user')->find($obs->id));
     }
 
     public function test_destroy_returns_404_when_not_owner(): void
@@ -259,8 +194,6 @@ final class DiagnosticReportApiTest extends TestCase
         ]);
         $report = DiagnosticReport::withoutGlobalScope('user')->create([
             'user_id' => $owner->id,
-            'report_type' => 'CBC',
-            'source' => ReportSource::Manual,
         ]);
 
         $response = $this->withAuth($other)->deleteJson('/api/diagnostic-reports/'.$report->id);
@@ -272,8 +205,7 @@ final class DiagnosticReportApiTest extends TestCase
     public function test_unauthenticated_requests_receive_401(): void
     {
         $this->postJson('/api/diagnostic-reports', [
-            'report_type' => 'CBC',
-            'observations' => [['biomarker_name' => 'X', 'original_value' => 1, 'original_unit' => 'g/dL']],
+            'notes' => 'Some notes',
         ])->assertStatus(401);
 
         $this->getJson('/api/diagnostic-reports')->assertStatus(401);

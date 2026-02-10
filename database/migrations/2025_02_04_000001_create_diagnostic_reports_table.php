@@ -13,12 +13,9 @@ return new class extends Migration
         Schema::create('diagnostic_reports', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('report_type');
-            $table->enum('source', ['manual', 'pdf', 'integration'])->default('manual');
             $table->text('notes')->nullable();
             $table->timestamps();
         });
-
     }
 
     public function down(): void
