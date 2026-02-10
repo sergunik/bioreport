@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DiagnosticReport\Resources;
 
 use App\Models\DiagnosticReport;
+use App\Observation\Resources\ObservationResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,8 +18,7 @@ final class DiagnosticReportResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'report_type' => $this->report_type,
-            'source' => $this->source->value,
+            'title' => $this->title,
             'notes' => $this->notes,
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),

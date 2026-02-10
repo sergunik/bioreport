@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\DiagnosticReport\Enums\ReportSource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Single lab report (e.g. CBC, Lipid Panel). User-scoped via global scope.
+ * Logical container for observations. User-scoped via global scope.
  */
 final class DiagnosticReport extends Model
 {
@@ -24,20 +23,9 @@ final class DiagnosticReport extends Model
      */
     protected $fillable = [
         'user_id',
-        'report_type',
-        'source',
+        'title',
         'notes',
     ];
-
-    /**
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'source' => ReportSource::class,
-        ];
-    }
 
     protected static function booted(): void
     {

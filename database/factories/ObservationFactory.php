@@ -22,13 +22,23 @@ final class ObservationFactory extends Factory
             'diagnostic_report_id' => DiagnosticReport::factory(),
             'biomarker_name' => fake()->randomElement(['Hemoglobin', 'Hematocrit', 'Glucose', 'Cholesterol']),
             'biomarker_code' => fake()->optional(0.7)->numerify('###-#'),
-            'original_value' => fake()->randomFloat(2, 1, 50),
-            'original_unit' => fake()->randomElement(['g/dL', '%', 'mg/dL', 'mmol/L']),
-            'normalized_value' => fake()->optional(0.6)->randomFloat(2, 1, 50),
-            'normalized_unit' => fake()->optional(0.6)->randomElement(['g/dL', '%', 'mg/dL']),
+            'value' => fake()->randomFloat(2, 1, 50),
+            'unit' => fake()->randomElement(['g/dL', '%', 'mg/dL', 'mmol/L']),
             'reference_range_min' => fake()->optional(0.5)->randomFloat(2, 0, 20),
             'reference_range_max' => fake()->optional(0.5)->randomFloat(2, 20, 100),
             'reference_unit' => fake()->optional(0.5)->randomElement(['g/dL', '%']),
         ];
+    }
+
+    public function configure(): static
+    {
+        return $this->afterMaking(function (Observation $observation): void {
+            if ($observation->diagnostic_report_id !== null && $observation->user_id === null) {
+                $report = DiagnosticReport::withoutGlobalScope('user')->find($observation->diagnostic_report_id);
+                if ($report !== null) {
+                    $observation->user_id = $report->user_id;
+                }
+            }
+        });
     }
 }

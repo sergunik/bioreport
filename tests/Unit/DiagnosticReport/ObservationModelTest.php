@@ -41,34 +41,4 @@ final class ObservationModelTest extends TestCase
         $obs->id = 1;
         self::assertFalse($obs->hasReferenceRange());
     }
-
-    public function test_is_normalized_returns_true_when_value_and_unit_set(): void
-    {
-        $obs = new Observation([
-            'normalized_value' => 14.2,
-            'normalized_unit' => 'g/dL',
-        ]);
-        $obs->id = 1;
-        self::assertTrue($obs->isNormalized());
-    }
-
-    public function test_is_normalized_returns_false_when_value_null(): void
-    {
-        $obs = new Observation([
-            'normalized_value' => null,
-            'normalized_unit' => 'g/dL',
-        ]);
-        $obs->id = 1;
-        self::assertFalse($obs->isNormalized());
-    }
-
-    public function test_is_normalized_returns_false_when_unit_null(): void
-    {
-        $obs = new Observation([
-            'normalized_value' => 14.2,
-            'normalized_unit' => null,
-        ]);
-        $obs->id = 1;
-        self::assertFalse($obs->isNormalized());
-    }
 }

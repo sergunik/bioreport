@@ -10,6 +10,8 @@ use App\Auth\Services\CookieService;
 use App\Auth\Services\JwtService;
 use App\DiagnosticReport\Policies\DiagnosticReportPolicy;
 use App\Models\DiagnosticReport;
+use App\Models\Observation;
+use App\Observation\Policies\ObservationPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,6 +22,7 @@ final class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         DiagnosticReport::class => DiagnosticReportPolicy::class,
+        Observation::class => ObservationPolicy::class,
     ];
 
     public function register(): void

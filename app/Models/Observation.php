@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 /**
- * Single measured biomarker within a diagnostic report (original + normalized values).
+ * Single measured biomarker within a diagnostic report.
  */
 final class Observation extends Model
 {
@@ -19,13 +21,12 @@ final class Observation extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'user_id',
         'diagnostic_report_id',
         'biomarker_name',
         'biomarker_code',
-        'original_value',
-        'original_unit',
-        'normalized_value',
-        'normalized_unit',
+        'value',
+        'unit',
         'reference_range_min',
         'reference_range_max',
         'reference_unit',
@@ -37,11 +38,31 @@ final class Observation extends Model
     protected function casts(): array
     {
         return [
-            'original_value' => 'decimal:5',
-            'normalized_value' => 'decimal:5',
+            'value' => 'decimal:5',
             'reference_range_min' => 'decimal:5',
             'reference_range_max' => 'decimal:5',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        self::addGlobalScope('user', function (Builder $builder): void {
+            $userId = Auth::guard('jwt')->id();
+            if ($userId === null) {
+                $builder->whereRaw('1 = 0');
+
+                return;
+            }
+            $builder->where('observations.user_id', $userId);
+        });
+    }
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**
@@ -55,10 +76,5 @@ final class Observation extends Model
     public function hasReferenceRange(): bool
     {
         return $this->reference_range_min !== null || $this->reference_range_max !== null;
-    }
-
-    public function isNormalized(): bool
-    {
-        return $this->normalized_value !== null && $this->normalized_unit !== null;
     }
 }

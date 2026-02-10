@@ -10,6 +10,7 @@ use App\Auth\Controllers\RefreshController;
 use App\Auth\Controllers\RegisterController;
 use App\Auth\Controllers\ResetPasswordController;
 use App\DiagnosticReport\Controllers\DiagnosticReportController;
+use App\Observation\Controllers\ObservationController;
 use App\System\Controllers\HealthController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,4 +42,11 @@ Route::middleware('auth:jwt')->prefix('diagnostic-reports')->group(function (): 
     Route::get('/{id}', [DiagnosticReportController::class, 'show']);
     Route::patch('/{id}', [DiagnosticReportController::class, 'update']);
     Route::delete('/{id}', [DiagnosticReportController::class, 'destroy']);
+    Route::post('/{id}/observations', [ObservationController::class, 'store']);
+});
+
+Route::middleware('auth:jwt')->prefix('observations')->group(function (): void {
+    Route::get('/{id}', [ObservationController::class, 'show']);
+    Route::patch('/{id}', [ObservationController::class, 'update']);
+    Route::delete('/{id}', [ObservationController::class, 'destroy']);
 });
