@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DiagnosticReport\Resources;
 
 use App\Models\DiagnosticReport;
+use App\Observation\Resources\ObservationResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

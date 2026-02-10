@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Observation\Controllers;
 
-use App\DiagnosticReport\Resources\ObservationResource;
 use App\Http\Controllers\AuthenticatedController;
 use App\Observation\DTOs\CreateObservationDto;
 use App\Observation\Requests\StoreObservationRequest;
 use App\Observation\Requests\UpdateObservationRequest;
+use App\Observation\Resources\ObservationResource;
 use App\Observation\Services\ObservationService;
 use App\Observation\Services\ObservationServiceFactory;
 use Dedoc\Scramble\Attributes\Response as ScrambleResponse;

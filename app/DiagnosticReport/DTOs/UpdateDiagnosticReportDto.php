@@ -14,8 +14,8 @@ final readonly class UpdateDiagnosticReportDto
     public static function fromValidated(array $data): self
     {
         return new self(
-            title: array_key_exists('title', $data) ? $data['title'] : null,
-            notes: array_key_exists('notes', $data) ? $data['notes'] : null,
+            title: $data['title'] ?? null,
+            notes: $data['notes'] ?? null,
         );
     }
 }
