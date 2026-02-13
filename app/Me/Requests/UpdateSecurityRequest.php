@@ -26,7 +26,7 @@ final class UpdateSecurityRequest extends FormRequest
 
         if ($this->has('password') && (string) $this->input('password') !== '') {
             /** @example "CurrentSecureP@ss1" */
-            $rules['current_password'] = ['required', 'current_password'];
+            $rules['current_password'] = ['required', 'current_password:jwt'];
             /** @example "NewSecureP@ssw0rd123" */
             $rules['password'] = ['required', 'confirmed', Password::defaults()];
         }

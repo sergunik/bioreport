@@ -30,7 +30,7 @@ final class DeleteMeRequest extends FormRequest
     {
         return [
             /** @example "CurrentSecureP@ss1" */
-            'password' => ['required', 'current_password'],
+            'password' => ['required', 'current_password:jwt'],
         ];
     }
 }
