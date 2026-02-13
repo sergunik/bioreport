@@ -5,7 +5,7 @@ services:
       dockerfile: docker/nginx/Dockerfile
     container_name: bioreport-nginx
     ports:
-      - "80:80"
+      - "80:8080"
     volumes:
       - .:/var/www:ro
     depends_on:
