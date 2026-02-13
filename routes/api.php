@@ -29,24 +29,26 @@ Route::prefix('auth')->group(function (): void {
     Route::post('password/reset', ResetPasswordController::class);
 });
 
-Route::middleware('auth:jwt')->prefix('account')->group(function (): void {
-    Route::post('/', [AccountController::class, 'store']);
-    Route::get('/', [AccountController::class, 'show']);
-    Route::patch('/', [AccountController::class, 'update']);
-    Route::delete('/', [AccountController::class, 'destroy']);
-});
+Route::middleware('auth:jwt')->group(function (): void {
+    Route::prefix('account')->group(function (): void {
+        Route::post('/', [AccountController::class, 'store']);
+        Route::get('/', [AccountController::class, 'show']);
+        Route::patch('/', [AccountController::class, 'update']);
+        Route::delete('/', [AccountController::class, 'destroy']);
+    });
 
-Route::middleware('auth:jwt')->prefix('diagnostic-reports')->group(function (): void {
-    Route::post('/', [DiagnosticReportController::class, 'store']);
-    Route::get('/', [DiagnosticReportController::class, 'index']);
-    Route::get('/{id}', [DiagnosticReportController::class, 'show']);
-    Route::patch('/{id}', [DiagnosticReportController::class, 'update']);
-    Route::delete('/{id}', [DiagnosticReportController::class, 'destroy']);
-    Route::post('/{id}/observations', [ObservationController::class, 'store']);
-});
+    Route::prefix('diagnostic-reports')->group(function (): void {
+        Route::post('/', [DiagnosticReportController::class, 'store']);
+        Route::get('/', [DiagnosticReportController::class, 'index']);
+        Route::get('/{id}', [DiagnosticReportController::class, 'show']);
+        Route::patch('/{id}', [DiagnosticReportController::class, 'update']);
+        Route::delete('/{id}', [DiagnosticReportController::class, 'destroy']);
+        Route::post('/{id}/observations', [ObservationController::class, 'store']);
+    });
 
-Route::middleware('auth:jwt')->prefix('observations')->group(function (): void {
-    Route::get('/{id}', [ObservationController::class, 'show']);
-    Route::patch('/{id}', [ObservationController::class, 'update']);
-    Route::delete('/{id}', [ObservationController::class, 'destroy']);
+    Route::prefix('observations')->group(function (): void {
+        Route::get('/{id}', [ObservationController::class, 'show']);
+        Route::patch('/{id}', [ObservationController::class, 'update']);
+        Route::delete('/{id}', [ObservationController::class, 'destroy']);
+    });
 });

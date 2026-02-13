@@ -14,6 +14,8 @@ RUN docker-php-ext-install intl mbstring opcache pcntl zip pdo_pgsql
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+COPY docker/php/conf.d/99-bioreport.ini /usr/local/etc/php/conf.d/99-bioreport.ini
+
 WORKDIR /var/www
 
 RUN chown -R www-data:www-data /var/www \
