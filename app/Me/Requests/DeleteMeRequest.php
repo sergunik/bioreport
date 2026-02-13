@@ -14,6 +14,16 @@ final class DeleteMeRequest extends FormRequest
     }
 
     /**
+     * Use only JSON body for validation so password is never read from query.
+     *
+     * @return array<string, mixed>
+     */
+    public function validationData(): array
+    {
+        return $this->json()->all();
+    }
+
+    /**
      * @return array<string, array<int, string>>
      */
     public function rules(): array
