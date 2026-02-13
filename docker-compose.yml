@@ -17,6 +17,7 @@ services:
     tmpfs:
       - /var/cache/nginx
       - /var/run
+      - /tmp
 
   app:
     build:
