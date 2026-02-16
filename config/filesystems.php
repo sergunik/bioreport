@@ -47,6 +47,11 @@ return [
             'report' => false,
         ],
 
+        'uploaded_documents' => [
+            'driver' => env('UPLOADED_DOCUMENTS_STORAGE_DRIVER', 'local'),
+            'root' => storage_path('app/uploaded_documents'),
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

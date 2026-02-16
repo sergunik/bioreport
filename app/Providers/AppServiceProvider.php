@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\UploadedDocuments\Contracts\DocumentStorageInterface;
+use App\UploadedDocuments\Storage\LocalDocumentStorage;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
@@ -16,7 +18,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(DocumentStorageInterface::class, function ($app): DocumentStorageInterface {
+            return new LocalDocumentStorage(
+                $app['filesystem']->disk('uploaded_documents')
+            );
+        });
     }
 
     /**
