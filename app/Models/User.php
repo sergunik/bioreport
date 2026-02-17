@@ -85,4 +85,12 @@ final class User extends Model implements AuthenticatableContract
     {
         return $this->hasMany(DiagnosticReport::class);
     }
+
+    /**
+     * @return HasMany<UploadedDocument>
+     */
+    public function uploadedDocuments(): HasMany
+    {
+        return $this->hasMany(UploadedDocument::class);
+    }
 }

@@ -15,6 +15,7 @@ use App\Me\Controllers\ProfileController;
 use App\Me\Controllers\SecurityController;
 use App\Observation\Controllers\ObservationController;
 use App\System\Controllers\HealthController;
+use App\UploadedDocuments\Controllers\DocumentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('health', [HealthController::class, 'index']);
@@ -60,5 +61,15 @@ Route::middleware('auth:jwt')->group(function (): void {
         Route::get('/{id}', [ObservationController::class, 'show']);
         Route::patch('/{id}', [ObservationController::class, 'update']);
         Route::delete('/{id}', [ObservationController::class, 'destroy']);
+    });
+
+    Route::prefix('documents')->group(function (): void {
+        Route::post('/', [DocumentController::class, 'store'])
+            ->middleware('throttle:10,1');
+        Route::get('/', [DocumentController::class, 'index']);
+        Route::get('/{uuid}/metadata', [DocumentController::class, 'metadata'])
+            ->whereUuid('uuid');
+        Route::get('/{uuid}', [DocumentController::class, 'show'])
+            ->whereUuid('uuid');
     });
 });
