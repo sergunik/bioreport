@@ -39,6 +39,23 @@ final class DocumentApiTest extends TestCase
             ->withUnencryptedCookie(config('auth_tokens.cookies.access_name'), $tokens['access']);
     }
 
+    private function createUploadedDocumentForUser(User $user, string $uuid, int $fileSizeBytes, string $fileHashSha256, ?array $mlRawResult = null, ?array $mlNormalizedResult = null): UploadedDocument
+    {
+        $doc = new UploadedDocument([
+            'uuid' => $uuid,
+            'storage_disk' => 'local',
+            'file_size_bytes' => $fileSizeBytes,
+            'mime_type' => 'application/pdf',
+            'file_hash_sha256' => $fileHashSha256,
+            'ml_raw_result' => $mlRawResult,
+            'ml_normalized_result' => $mlNormalizedResult,
+        ]);
+        $doc->user_id = $user->id;
+        $doc->save();
+
+        return $doc;
+    }
+
     public function test_store_creates_document_and_job(): void
     {
         $user = User::factory()->create([
@@ -68,9 +85,8 @@ final class DocumentApiTest extends TestCase
             'email' => 'doc-dup@example.com',
             'password' => Hash::make('StrongPass123!@#'),
         ]);
-        $content = 'dummy pdf content';
+        $content = '%PDF-1.4\n%âãÏÓ\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF\n';
         $file1 = UploadedFile::fake()->createWithContent('report.pdf', $content);
-        $file1->mimeType('application/pdf');
 
         $firstResponse = $this->withAuth($user)->post('/api/documents', ['file' => $file1], ['Accept' => 'application/json']);
         $firstResponse->assertStatus(201);
@@ -147,22 +163,8 @@ final class DocumentApiTest extends TestCase
         ]);
         $other = User::factory()->create(['email' => 'other-doc@example.com']);
 
-        UploadedDocument::withoutGlobalScope('user')->create([
-            'uuid' => '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d',
-            'user_id' => $user->id,
-            'storage_disk' => 'local',
-            'file_size_bytes' => 100,
-            'mime_type' => 'application/pdf',
-            'file_hash_sha256' => str_repeat('a', 64),
-        ]);
-        UploadedDocument::withoutGlobalScope('user')->create([
-            'uuid' => '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c4e',
-            'user_id' => $other->id,
-            'storage_disk' => 'local',
-            'file_size_bytes' => 200,
-            'mime_type' => 'application/pdf',
-            'file_hash_sha256' => str_repeat('b', 64),
-        ]);
+        $this->createUploadedDocumentForUser($user, '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d', 100, str_repeat('a', 64));
+        $this->createUploadedDocumentForUser($other, '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c4e', 200, str_repeat('b', 64));
 
         $response = $this->withAuth($user)->getJson('/api/documents');
 
@@ -178,14 +180,7 @@ final class DocumentApiTest extends TestCase
             'password' => Hash::make('StrongPass123!@#'),
         ]);
         $uuid = '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d';
-        UploadedDocument::withoutGlobalScope('user')->create([
-            'uuid' => $uuid,
-            'user_id' => $user->id,
-            'storage_disk' => 'local',
-            'file_size_bytes' => 100,
-            'mime_type' => 'application/pdf',
-            'file_hash_sha256' => str_repeat('a', 64),
-        ]);
+        $this->createUploadedDocumentForUser($user, $uuid, 100, str_repeat('a', 64));
         Storage::disk('uploaded_documents')->put(
             $user->id.'/'.$uuid.'.pdf',
             'binary pdf content'
@@ -211,14 +206,7 @@ final class DocumentApiTest extends TestCase
             'password' => Hash::make('StrongPass123!@#'),
         ]);
         $uuid = '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d';
-        UploadedDocument::withoutGlobalScope('user')->create([
-            'uuid' => $uuid,
-            'user_id' => $user->id,
-            'storage_disk' => 'local',
-            'file_size_bytes' => 100,
-            'mime_type' => 'application/pdf',
-            'file_hash_sha256' => str_repeat('a', 64),
-        ]);
+        $this->createUploadedDocumentForUser($user, $uuid, 100, str_repeat('a', 64));
 
         $response = $this->withAuth($user)->get('/api/documents/'.$uuid);
 
@@ -233,14 +221,7 @@ final class DocumentApiTest extends TestCase
             'password' => Hash::make('StrongPass123!@#'),
         ]);
         $uuid = '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d';
-        UploadedDocument::withoutGlobalScope('user')->create([
-            'uuid' => $uuid,
-            'user_id' => $owner->id,
-            'storage_disk' => 'local',
-            'file_size_bytes' => 100,
-            'mime_type' => 'application/pdf',
-            'file_hash_sha256' => str_repeat('a', 64),
-        ]);
+        $this->createUploadedDocumentForUser($owner, $uuid, 100, str_repeat('a', 64));
 
         $response = $this->withAuth($other)->get('/api/documents/'.$uuid);
 
@@ -254,16 +235,7 @@ final class DocumentApiTest extends TestCase
             'password' => Hash::make('StrongPass123!@#'),
         ]);
         $uuid = '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d';
-        UploadedDocument::withoutGlobalScope('user')->create([
-            'uuid' => $uuid,
-            'user_id' => $user->id,
-            'storage_disk' => 'local',
-            'file_size_bytes' => 256,
-            'mime_type' => 'application/pdf',
-            'file_hash_sha256' => str_repeat('a', 64),
-            'ml_raw_result' => ['key' => 'raw'],
-            'ml_normalized_result' => ['key' => 'normalized'],
-        ]);
+        $this->createUploadedDocumentForUser($user, $uuid, 256, str_repeat('a', 64), ['key' => 'raw'], ['key' => 'normalized']);
 
         $response = $this->withAuth($user)->getJson('/api/documents/'.$uuid.'/metadata');
 
@@ -282,14 +254,7 @@ final class DocumentApiTest extends TestCase
             'password' => Hash::make('StrongPass123!@#'),
         ]);
         $uuid = '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d';
-        UploadedDocument::withoutGlobalScope('user')->create([
-            'uuid' => $uuid,
-            'user_id' => $owner->id,
-            'storage_disk' => 'local',
-            'file_size_bytes' => 100,
-            'mime_type' => 'application/pdf',
-            'file_hash_sha256' => str_repeat('a', 64),
-        ]);
+        $this->createUploadedDocumentForUser($owner, $uuid, 100, str_repeat('a', 64));
 
         $response = $this->withAuth($other)->getJson('/api/documents/'.$uuid.'/metadata');
 

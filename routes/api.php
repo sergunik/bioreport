@@ -64,7 +64,8 @@ Route::middleware('auth:jwt')->group(function (): void {
     });
 
     Route::prefix('documents')->group(function (): void {
-        Route::post('/', [DocumentController::class, 'store']);
+        Route::post('/', [DocumentController::class, 'store'])
+            ->middleware('throttle:10,1');
         Route::get('/', [DocumentController::class, 'index']);
         Route::get('/{uuid}/metadata', [DocumentController::class, 'metadata'])
             ->whereUuid('uuid');

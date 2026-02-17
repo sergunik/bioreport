@@ -21,8 +21,7 @@ return new class extends Migration
         });
 
         Schema::table('pdf_jobs', function (Blueprint $table): void {
-            $table->index('status');
-            $table->index('locked_at');
+            $table->index(['status', 'locked_at']);
             $table->index('uploaded_document_id');
         });
     }

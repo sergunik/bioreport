@@ -21,8 +21,10 @@ final readonly class UploadedDocumentServiceFactory
      */
     public function make(User $user): UploadedDocumentService
     {
-        $diskName = config('filesystems.disks.uploaded_documents.driver', 'local');
-
-        return new UploadedDocumentService($user, $this->documentStorage, $diskName);
+        return new UploadedDocumentService(
+            user: $user,
+            storage: $this->documentStorage,
+            storageDiskDriver: config('filesystems.disks.uploaded_documents.driver', 'local')
+        );
     }
 }

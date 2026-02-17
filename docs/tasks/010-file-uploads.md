@@ -81,12 +81,12 @@ updated_at              timestamp not null
 ```sql
 index (status)
 index (locked_at)
-index (document_id)
+index (uploaded_document_id)
 ```
 
-# 5. Storage Architecture
+# 4. Storage Architecture
 
-## 5.1 Disk Configuration
+## 4.1 Disk Configuration
 
 `config/filesystems.php`
 
@@ -101,7 +101,7 @@ Custom disk:
 
 Future S3-ready configuration. No implementation of S3 now, but structure allows easy switch.
 
-## 5.2 Storage Usage
+## 4.2 Storage Usage
 
 Only:
 
@@ -111,16 +111,16 @@ Storage::disk('uploaded_documents')
 
 No hardcoded paths.
 
-# 6. Upload Flow
+# 5. Upload Flow
 
-## 6.1 Validation Rules
+## 5.1 Validation Rules
 
 * required
 * file
 * mimetypes: application/pdf
 * max: 10240 (10MB) (move limitation to .env, not hardcoded)
 
-## 6.2 Hashing
+## 5.2 Hashing
 
 Before storing:
 
@@ -128,7 +128,7 @@ Before storing:
 hash('sha256', file_get_contents(...))
 ```
 
-## 6.3 Deduplication Logic
+## 5.3 Deduplication Logic
 
 If same hash exists for same user:
 
@@ -136,12 +136,12 @@ If same hash exists for same user:
 * Return existing document
 * Do not create new job
 
-## 6.4 Storage Strategy
+## 5.4 Storage Strategy
 
 * Generate UUID
 * Store as: `{user_id}/{uuid}.pdf`
 
-## 6.5 Job Creation
+## 5.5 Job Creation
 
 After successful storage:
 
@@ -151,9 +151,9 @@ After successful storage:
 Laravel does not call any Python-worker.
 
 
-# 7. Secure PDF Access
+# 6. Secure PDF Access
 
-## 7.1 Access Strategy
+## 6.1 Access Strategy
 
 No public storage exposure.
 
@@ -168,7 +168,7 @@ Controller:
 * Authorize ownership
 * Stream file via `response()->file()`
 
-## 7.2 Authorization Rules
+## 6.2 Authorization Rules
 
 User must:
 
@@ -176,7 +176,7 @@ User must:
 * Own document
 
 
-# 8 Security Requirements
+# 7 Security Requirements
 
 * JWT-based authentication
 * Stored in HTTP-only secure cookies
@@ -184,7 +184,7 @@ User must:
 * CSRF protection enabled
 * Token refresh strategy implemented
 
-# 9. API Endpoints
+# 8. API Endpoints
 
 ## POST /documents
 
@@ -214,7 +214,7 @@ Stream PDF securely.
 Return metadata + ML results.
 
 
-# 10. Strict Typing Requirements
+# 9. Strict Typing Requirements
 
 * `declare(strict_types=1);`
 * All properties typed
@@ -224,7 +224,7 @@ Return metadata + ML results.
 * Domain separation with clear namespaces
 
 
-# 11. Application Structure
+# 10. Application Structure
 
 Use clean architecture principles. Separate concerns.
 Implement logic in separate domain dir:
@@ -232,7 +232,7 @@ Implement logic in separate domain dir:
 
 Use Laravel's service container for dependency injection. No static calls to facades in domain logic.
 
-# 12. Technical Stack
+# 11. Technical Stack
 
 * Docker-based deployment
 * PHP 8.4
@@ -244,15 +244,15 @@ Use Laravel's service container for dependency injection. No static calls to fac
 * Cursor rules compliance
 
 
-# 13. Required Tests
+# 12. Required Tests
 
-## 13.1 Feature Tests
+## 12.1 Feature Tests
 
-## 13.2 Unit Tests
+## 12.2 Unit Tests
 
-## 13.3 Integration Tests
+## 12.3 Integration Tests
 
-# 14. Acceptance Criteria (AC)
+# 13. Acceptance Criteria (AC)
 
 * User can upload PDF ≤10MB
 * Duplicate upload does not create new processing job
@@ -268,7 +268,7 @@ Use Laravel's service container for dependency injection. No static calls to fac
 * All tests pass
 
 
-# 15. Future-Ready Considerations (No Implementation Now)
+# 14. Future-Ready Considerations (No Implementation Now)
 
 * S3 storage switch
 * PDF files rotation and cleanup strategy

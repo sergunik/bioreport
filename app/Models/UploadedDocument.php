@@ -20,7 +20,6 @@ final class UploadedDocument extends Model
      */
     protected $fillable = [
         'uuid',
-        'user_id',
         'storage_disk',
         'file_size_bytes',
         'mime_type',

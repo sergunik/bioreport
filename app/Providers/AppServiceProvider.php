@@ -18,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(DocumentStorageInterface::class, function ($app): DocumentStorageInterface {
+        $this->app->singleton(DocumentStorageInterface::class, function ($app): DocumentStorageInterface {
             return new LocalDocumentStorage(
                 $app['filesystem']->disk('uploaded_documents')
             );

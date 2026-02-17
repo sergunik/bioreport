@@ -58,14 +58,15 @@ final class UploadedDocumentServiceTest extends TestCase
         $user = User::factory()->create();
         $content = 'same content';
         $hash = hash('sha256', $content);
-        $existing = UploadedDocument::withoutGlobalScope('user')->create([
+        $existing = new UploadedDocument([
             'uuid' => 'existing-uuid-123',
-            'user_id' => $user->id,
             'storage_disk' => 'local',
             'file_size_bytes' => strlen($content),
             'mime_type' => 'application/pdf',
             'file_hash_sha256' => $hash,
         ]);
+        $existing->user_id = $user->id;
+        $existing->save();
 
         $storage = $this->createMock(DocumentStorageInterface::class);
         $storage->expects(self::never())->method('put');
@@ -108,14 +109,15 @@ final class UploadedDocumentServiceTest extends TestCase
     public function test_read_stream_throws_when_file_missing_in_storage(): void
     {
         $user = User::factory()->create();
-        $document = UploadedDocument::withoutGlobalScope('user')->create([
+        $document = new UploadedDocument([
             'uuid' => '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d',
-            'user_id' => $user->id,
             'storage_disk' => 'local',
             'file_size_bytes' => 100,
             'mime_type' => 'application/pdf',
             'file_hash_sha256' => str_repeat('a', 64),
         ]);
+        $document->user_id = $user->id;
+        $document->save();
 
         $storage = $this->createMock(DocumentStorageInterface::class);
         $storage->expects(self::once())->method('exists')->willReturn(false);
