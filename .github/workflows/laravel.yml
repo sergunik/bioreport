@@ -35,3 +35,23 @@ jobs:
       run: php artisan test
     - name: Run linter / static analysis
       run: composer lint:test
+
+  pdf-worker:
+    name: PDF Worker (Python)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+      - name: Ruff
+        run: ruff check app tests
+      - name: Mypy
+        run: mypy app
+      - name: Pytest
+        run: pytest

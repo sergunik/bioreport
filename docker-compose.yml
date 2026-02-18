@@ -45,6 +45,32 @@ services:
       - bioreport
     restart: unless-stopped
 
+  worker:
+    build:
+      context: .
+      dockerfile: docker/worker/Dockerfile
+      args:
+        SPACY_MODEL_NAME: ${WORKER_SPACY_MODEL_NAME:-en_core_web_sm}
+    container_name: bioreport-worker
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_DATABASE}
+      DB_USER: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      POLL_INTERVAL_SECONDS: ${WORKER_POLL_INTERVAL_SECONDS:-5}
+      MAX_ATTEMPTS: ${WORKER_MAX_ATTEMPTS:-3}
+      STALE_LOCK_SECONDS: ${WORKER_STALE_LOCK_SECONDS:-300}
+      STORAGE_BASE_PATH: /data/uploaded_documents
+      SPACY_MODEL_NAME: ${WORKER_SPACY_MODEL_NAME:-en_core_web_sm}
+    volumes:
+      - ./storage/app/uploaded_documents:/data/uploaded_documents:ro
+    depends_on:
+      - postgres
+    networks:
+      - bioreport
+    restart: unless-stopped
+
 networks:
   bioreport:
     driver: bridge
