@@ -10,11 +10,12 @@ def normalize(raw: dict[str, Any], text_snippet: str = "") -> NormalizedResult:
     entities = raw.get("entities") or []
     language = raw.get("language") or "en"
     person_texts = [e["text"] for e in entities if e.get("label") == "PERSON"]
-    first_name = person_texts[0].split()[0] if person_texts else ""
+    first_parts = person_texts[0].split() if person_texts else []
+    first_name = first_parts[0] if first_parts else ""
     second_name = (
-        person_texts[0].split()[-1]
-        if person_texts and len(person_texts[0].split()) > 1
-        else (person_texts[1] if len(person_texts) > 1 else "")
+        first_parts[-1]
+        if len(first_parts) > 1
+        else (person_texts[1].split()[0] if len(person_texts) > 1 else "")
     )
     date_entities = [e["text"] for e in entities if e.get("label") == "DATE"]
     dob = date_entities[0] if date_entities else ""

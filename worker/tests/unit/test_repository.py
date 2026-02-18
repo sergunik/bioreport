@@ -48,7 +48,8 @@ async def test_fail_job_truncates_message() -> None:
     await repo.fail_job(1, long_msg)
     call_args = cur.execute.call_args
     assert call_args is not None
-    assert len(call_args[0][1]) <= 4096
+    truncated_msg = call_args[0][1][0]
+    assert len(truncated_msg) <= 4096
 
 
 @pytest.mark.asyncio

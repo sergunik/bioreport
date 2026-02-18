@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 
 import pytest
 from app.config import Settings
-from app.db import get_connection_string
+from app.db import connect
 from app.processor import process_one
 from testcontainers.postgres import PostgresContainer
 
@@ -67,8 +67,7 @@ def db_settings(postgres_url: str) -> Settings:
 
 @pytest.fixture(scope="module")
 def init_schema(db_settings: Settings) -> None:
-    import psycopg
-    conn = psycopg.connect(get_connection_string(db_settings))
+    conn = connect(db_settings)
     try:
         with conn.cursor() as cur:
             for stmt in SCHEMA_SQL.strip().split(";"):

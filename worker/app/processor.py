@@ -86,14 +86,25 @@ async def process_one(settings: Settings) -> bool:
                 log.warning("job_requeued", status="pending", error_type=type(e).__name__)
             await conn.commit()
             return True
-        normalized = normalize(raw_result, text_snippet=text)
-        await repo.complete_job(
-            job_id,
-            document_id,
-            raw_result,
-            normalized.to_json_dict(),
-        )
-        await conn.commit()
+        try:
+            normalized = normalize(raw_result, text_snippet=text)
+            await repo.complete_job(
+                job_id,
+                document_id,
+                raw_result,
+                normalized.to_json_dict(),
+            )
+            await conn.commit()
+        except Exception as e:
+            err = f"{e!s}\n{traceback.format_exc()}"
+            if job.attempts >= settings.max_attempts:
+                await repo.fail_job(job_id, err)
+                log.warning("job_failed", status="failed", error_type=type(e).__name__)
+            else:
+                await repo.requeue_job(job_id)
+                log.warning("job_requeued", status="pending", error_type=type(e).__name__)
+            await conn.commit()
+            return True
         log.info("job_done", status="done")
         return True
     finally:

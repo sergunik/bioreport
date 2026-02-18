@@ -7,16 +7,21 @@ import psycopg
 from app.config import Settings
 
 
-def get_connection_string(settings: Settings) -> str:
-    return (
-        f"postgresql://{settings.db_user}:{settings.db_password}"
-        f"@{settings.db_host}:{settings.db_port}/{settings.db_name}"
+def connect(settings: Settings) -> psycopg.Connection[Any]:
+    return psycopg.connect(
+        host=settings.db_host,
+        port=settings.db_port,
+        dbname=settings.db_name,
+        user=settings.db_user,
+        password=settings.db_password,
     )
 
 
-def connect(settings: Settings) -> psycopg.Connection[Any]:
-    return psycopg.connect(get_connection_string(settings))
-
-
 async def connect_async(settings: Settings) -> psycopg.AsyncConnection[Any]:
-    return await psycopg.AsyncConnection.connect(get_connection_string(settings))
+    return await psycopg.AsyncConnection.connect(
+        host=settings.db_host,
+        port=settings.db_port,
+        dbname=settings.db_name,
+        user=settings.db_user,
+        password=settings.db_password,
+    )

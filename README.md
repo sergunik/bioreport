@@ -46,6 +46,8 @@ See [docs/self-host.md](docs/self-host.md) for how the frontend is included and 
 |----------------------|-------------|
 | `make up`            | Start stack (nginx, app, postgres, worker) |
 | `make setup`         | Run migrations and app setup in container |
+| `make worker-lint`   | Run worker ruff + mypy inside Docker |
+| `make worker-test`   | Run worker pytest inside Docker |
 | `composer test`      | Run PHPUnit tests |
 | `composer lint`      | Fix code style (Pint) |
 | `composer lint:test` | Check style without changing files |

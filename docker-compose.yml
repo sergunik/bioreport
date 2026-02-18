@@ -49,6 +49,8 @@ services:
     build:
       context: .
       dockerfile: docker/worker/Dockerfile
+      args:
+        SPACY_MODEL_NAME: ${WORKER_SPACY_MODEL_NAME:-en_core_web_sm}
     container_name: bioreport-worker
     environment:
       DB_HOST: ${DB_HOST}

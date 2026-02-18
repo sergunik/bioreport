@@ -23,6 +23,7 @@ For local (non-Docker) runs, set:
 | `DB_PASSWORD` | Database password | (required) |
 | `POLL_INTERVAL_SECONDS` | Seconds between polls when no job | `5` |
 | `MAX_ATTEMPTS` | Max attempts before marking job failed | `3` |
+| `STALE_LOCK_SECONDS` | Seconds before a processing job is considered stale | `300` |
 | `STORAGE_BASE_PATH` | Base path for PDF files (local disk) | `/data/uploaded_documents` |
 | `SPACY_MODEL_NAME` | spaCy model to load | `en_core_web_sm` |
 
@@ -64,6 +65,42 @@ For local (non-Docker) runs, set:
 The worker runs as the `worker` service in the main project’s Docker Compose.
 
 The Compose file is at the repo root; the worker image is built from `docker/worker/Dockerfile`. It uses the same `.env` as the app (DB vars and `WORKER_*` at the end). Uploaded PDFs are in `storage/app/uploaded_documents`, mounted read-only into the container at `/data/uploaded_documents`. No ports are exposed.
+
+### Run lint/tests inside Docker
+
+From repository root:
+
+```bash
+make worker-lint-docker
+make worker-test-docker
+make worker-check-docker
+```
+
+These commands run the checks in the `worker` Docker container with the project mounted into `/app`, install dev dependencies there, and execute:
+
+- `ruff check app tests`
+- `mypy app`
+- `pytest`
+
+`make worker-test-docker` runs unit tests in Docker container.
+For integration tests (`testcontainers`), run from host:
+
+```bash
+cd worker
+pytest tests/integration
+```
+
+### Common build error
+
+If worker build fails with:
+
+`python -m spacy download ... Missing argument 'MODEL'`
+
+ensure `WORKER_SPACY_MODEL_NAME` is set in root `.env` (default is `en_core_web_sm`) and rebuild:
+
+```bash
+docker-compose build --no-cache worker
+```
 
 ## Behaviour
 
