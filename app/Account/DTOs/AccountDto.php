@@ -15,6 +15,7 @@ final readonly class AccountDto
         public string $sex,
         public string $language,
         public string $timezone,
+        public ?string $sensitiveWords,
     ) {}
 
     public static function fromModel(Account $account): self
@@ -26,6 +27,7 @@ final readonly class AccountDto
             sex: $account->sex,
             language: $account->language,
             timezone: $account->timezone,
+            sensitiveWords: $account->sensitive_words,
         );
     }
 
@@ -36,7 +38,8 @@ final readonly class AccountDto
      *     date_of_birth: string,
      *     sex: string,
      *     language: string,
-     *     timezone: string
+     *     timezone: string,
+     *     sensitive_words: string|null
      * }
      */
     public function toArray(): array
@@ -48,6 +51,7 @@ final readonly class AccountDto
             'sex' => $this->sex,
             'language' => $this->language,
             'timezone' => $this->timezone,
+            'sensitive_words' => $this->sensitiveWords,
         ];
     }
 }

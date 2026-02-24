@@ -24,8 +24,10 @@ final class UploadedDocument extends Model
         'file_size_bytes',
         'mime_type',
         'file_hash_sha256',
-        'ml_raw_result',
-        'ml_normalized_result',
+        'parsed_result',
+        'anonymised_result',
+        'anonymised_artifacts',
+        'normalized_result',
         'processed_at',
     ];
 
@@ -36,8 +38,8 @@ final class UploadedDocument extends Model
     {
         return [
             'file_size_bytes' => 'integer',
-            'ml_raw_result' => 'array',
-            'ml_normalized_result' => 'array',
+            'anonymised_artifacts' => 'array',
+            'normalized_result' => 'array',
             'processed_at' => 'datetime',
         ];
     }

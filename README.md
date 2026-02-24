@@ -13,7 +13,6 @@ The system solves common problems related to medical data fragmentation across d
 - Docker & Docker Compose (for running the stack):
   - PHP 8.4
   - PostgreSQL (via Docker or local)
-  - Python 3.13 (only if running the PDF worker locally; in Docker it is included)
 
 ## Setup
 
@@ -27,7 +26,7 @@ Or:
 docker-compose up -d && docker-compose exec app composer setup
 ```
 
-This starts nginx, the Laravel app, PostgreSQL, and the PDF worker.
+This starts nginx, the Laravel app, and PostgreSQL.
 
 ## Running
 
@@ -44,10 +43,8 @@ See [docs/self-host.md](docs/self-host.md) for how the frontend is included and 
 
 | Command              | Description |
 |----------------------|-------------|
-| `make up`            | Start stack (nginx, app, postgres, worker) |
+| `make up`            | Start stack (nginx, app, postgres) |
 | `make setup`         | Run migrations and app setup in container |
-| `make worker-lint`   | Run worker ruff + mypy inside Docker |
-| `make worker-test`   | Run worker pytest inside Docker |
 | `composer test`      | Run PHPUnit tests |
 | `composer lint`      | Fix code style (Pint) |
 | `composer lint:test` | Check style without changing files |

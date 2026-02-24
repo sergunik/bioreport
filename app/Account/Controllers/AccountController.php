@@ -35,7 +35,7 @@ final class AccountController extends AuthenticatedController
     /**
      * Creates an account for the current user.
      */
-    #[ScrambleResponse(201, 'Created account', examples: [['id' => '1', 'nickname' => null, 'date_of_birth' => '1990-01-15', 'sex' => 'male', 'language' => 'uk', 'timezone' => 'Europe/Kyiv']])]
+    #[ScrambleResponse(201, 'Created account', examples: [['id' => '1', 'nickname' => null, 'date_of_birth' => '1990-01-15', 'sex' => 'male', 'language' => 'uk', 'timezone' => 'Europe/Kyiv', 'sensitive_words' => null]])]
     public function store(CreateAccountRequest $request): JsonResponse
     {
         $existing = $this->accountService->getOrNull();
@@ -56,7 +56,7 @@ final class AccountController extends AuthenticatedController
     /**
      * Returns the current user account.
      */
-    #[ScrambleResponse(200, 'Current account', examples: [['id' => '1', 'nickname' => 'John', 'date_of_birth' => '1990-01-15', 'sex' => 'male', 'language' => 'uk', 'timezone' => 'Europe/Kyiv']])]
+    #[ScrambleResponse(200, 'Current account', examples: [['id' => '1', 'nickname' => 'John', 'date_of_birth' => '1990-01-15', 'sex' => 'male', 'language' => 'uk', 'timezone' => 'Europe/Kyiv', 'sensitive_words' => 'patient doctor diagnosis']])]
     public function show(): JsonResponse
     {
         $account = $this->accountService->getOrFail();

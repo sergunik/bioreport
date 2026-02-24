@@ -28,8 +28,10 @@ final class DocumentMetadataResource extends JsonResource
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
             'job_status' => $this->relationLoaded('pdfJob') ? $this->pdfJob?->status : null,
-            'ml_raw_result' => $this->ml_raw_result,
-            'ml_normalized_result' => $this->ml_normalized_result,
+            'parsed_result' => $this->parsed_result,
+            'anonymised_result' => $this->anonymised_result,
+            'anonymised_artifacts' => $this->anonymised_artifacts,
+            'normalized_result' => $this->normalized_result,
         ];
     }
 }

@@ -12,6 +12,7 @@ final readonly class AccountCreateDto
         public ?string $nickname,
         public string $language,
         public string $timezone,
+        public ?string $sensitiveWords,
     ) {}
 
     /**
@@ -20,7 +21,8 @@ final readonly class AccountCreateDto
      *     date_of_birth: string,
      *     nickname?: string|null,
      *     language?: string|null,
-     *     timezone?: string|null
+     *     timezone?: string|null,
+     *     sensitive_words?: string|null
      * }  $data
      */
     public static function fromValidated(array $data): self
@@ -31,6 +33,7 @@ final readonly class AccountCreateDto
             nickname: $data['nickname'] ?? null,
             language: $data['language'] ?? 'en',
             timezone: $data['timezone'] ?? 'UTC',
+            sensitiveWords: $data['sensitive_words'] ?? null,
         );
     }
 }

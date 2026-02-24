@@ -39,16 +39,26 @@ final class DocumentApiTest extends TestCase
             ->withUnencryptedCookie(config('auth_tokens.cookies.access_name'), $tokens['access']);
     }
 
-    private function createUploadedDocumentForUser(User $user, string $uuid, int $fileSizeBytes, string $fileHashSha256, ?array $mlRawResult = null, ?array $mlNormalizedResult = null): UploadedDocument
-    {
+    private function createUploadedDocumentForUser(
+        User $user,
+        string $uuid,
+        int $fileSizeBytes,
+        string $fileHashSha256,
+        ?string $parsedResult = null,
+        ?string $anonymisedResult = null,
+        ?array $anonymisedArtifacts = null,
+        ?array $normalizedResult = null
+    ): UploadedDocument {
         $doc = new UploadedDocument([
             'uuid' => $uuid,
             'storage_disk' => 'local',
             'file_size_bytes' => $fileSizeBytes,
             'mime_type' => 'application/pdf',
             'file_hash_sha256' => $fileHashSha256,
-            'ml_raw_result' => $mlRawResult,
-            'ml_normalized_result' => $mlNormalizedResult,
+            'parsed_result' => $parsedResult,
+            'anonymised_result' => $anonymisedResult,
+            'anonymised_artifacts' => $anonymisedArtifacts,
+            'normalized_result' => $normalizedResult,
         ]);
         $doc->user_id = $user->id;
         $doc->save();
@@ -235,15 +245,26 @@ final class DocumentApiTest extends TestCase
             'password' => Hash::make('StrongPass123!@#'),
         ]);
         $uuid = '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d';
-        $this->createUploadedDocumentForUser($user, $uuid, 256, str_repeat('a', 64), ['key' => 'raw'], ['key' => 'normalized']);
+        $this->createUploadedDocumentForUser(
+            $user,
+            $uuid,
+            256,
+            str_repeat('a', 64),
+            'parsed-text',
+            'anonymised-text',
+            ['entities' => []],
+            ['key' => 'normalized']
+        );
 
         $response = $this->withAuth($user)->getJson('/api/documents/'.$uuid.'/metadata');
 
         $response->assertStatus(200);
         $response->assertJsonPath('uuid', $uuid);
         $response->assertJsonPath('file_size_bytes', 256);
-        $response->assertJsonPath('ml_raw_result.key', 'raw');
-        $response->assertJsonPath('ml_normalized_result.key', 'normalized');
+        $response->assertJsonPath('parsed_result', 'parsed-text');
+        $response->assertJsonPath('anonymised_result', 'anonymised-text');
+        $response->assertJsonPath('anonymised_artifacts.entities', []);
+        $response->assertJsonPath('normalized_result.key', 'normalized');
     }
 
     public function test_metadata_returns_404_when_not_owner(): void

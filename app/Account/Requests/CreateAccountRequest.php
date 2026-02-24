@@ -29,6 +29,8 @@ final class CreateAccountRequest extends FormRequest
             'language' => ['sometimes', 'string', 'size:2'],
             /** @example "Europe/Kyiv" */
             'timezone' => ['sometimes', 'string', 'timezone'],
+            /** @example "ivan ivanov mx0000aa" */
+            'sensitive_words' => ['sometimes', 'nullable', 'string', 'max:50000', 'regex:/^([a-zA-Z]+(\s+[a-zA-Z]+)*)?$/'],
         ];
     }
 }

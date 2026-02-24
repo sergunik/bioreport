@@ -20,10 +20,6 @@
 /storage/*.key
 /storage/pail
 /vendor
-/worker/.venv
-/worker/.mypy_cache
-/worker/.pytest_cache
-/worker/**/__pycache__/
 Homestead.json
 Homestead.yaml
 Thumbs.db

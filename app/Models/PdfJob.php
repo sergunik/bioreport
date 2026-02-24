@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Queue record for PDF processing. Consumed by Python worker.
+ * Queue record for PDF processing.
  */
 final class PdfJob extends Model
 {
