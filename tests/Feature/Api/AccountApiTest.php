@@ -47,6 +47,7 @@ final class AccountApiTest extends TestCase
             'sex' => 'male',
             'language' => 'en',
             'timezone' => 'UTC',
+            'sensitive_words' => null,
         ]);
 
         $account = Account::query()->where('user_id', $user->id)->first();
@@ -82,6 +83,7 @@ final class AccountApiTest extends TestCase
             'sex' => 'male',
             'language' => 'en',
             'timezone' => 'UTC',
+            'sensitive_words' => null,
         ]);
     }
 
@@ -136,6 +138,94 @@ final class AccountApiTest extends TestCase
         self::assertSame('Europe/Kyiv', $account->timezone);
         self::assertSame('1990-01-01', $account->date_of_birth->format('Y-m-d'));
         self::assertSame('male', $account->sex);
+    }
+
+    public function test_update_account_stores_and_normalizes_sensitive_words(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'sensitive@example.com',
+            'password' => Hash::make('StrongPass123!@#'),
+        ]);
+
+        Account::query()->create([
+            'user_id' => $user->id,
+            'nickname' => 'User',
+            'date_of_birth' => '1990-01-01',
+            'sex' => 'male',
+            'language' => 'en',
+            'timezone' => 'UTC',
+        ]);
+
+        $tokens = $this->app->make(\App\Auth\Services\AuthService::class)->issueTokenPair($user);
+
+        $response = $this->withCredentials()
+            ->withUnencryptedCookie(config('auth_tokens.cookies.access_name'), $tokens['access'])
+            ->patchJson('/api/account', [
+                'sensitive_words' => '  Patient   Doctor   Diagnosis  ',
+            ]);
+
+        $response->assertStatus(200);
+
+        $account = Account::query()->where('user_id', $user->id)->firstOrFail();
+        self::assertSame('patient doctor diagnosis', $account->sensitive_words);
+
+        $getResponse = $this->withCredentials()
+            ->withUnencryptedCookie(config('auth_tokens.cookies.access_name'), $tokens['access'])
+            ->getJson('/api/account');
+
+        $getResponse->assertStatus(200);
+        $getResponse->assertJson(['sensitive_words' => 'patient doctor diagnosis']);
+    }
+
+    public function test_create_account_accepts_optional_sensitive_words(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'create-sensitive@example.com',
+            'password' => Hash::make('StrongPass123!@#'),
+        ]);
+
+        $tokens = $this->app->make(\App\Auth\Services\AuthService::class)->issueTokenPair($user);
+
+        $response = $this->withCredentials()
+            ->withUnencryptedCookie(config('auth_tokens.cookies.access_name'), $tokens['access'])
+            ->postJson('/api/account', [
+                'sex' => 'male',
+                'date_of_birth' => '1990-01-01',
+                'sensitive_words' => 'patient doctor',
+            ]);
+
+        $response->assertStatus(201);
+        $response->assertJson(['sensitive_words' => 'patient doctor']);
+
+        $account = Account::query()->where('user_id', $user->id)->firstOrFail();
+        self::assertSame('patient doctor', $account->sensitive_words);
+    }
+
+    public function test_update_account_rejects_sensitive_words_with_non_latin(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'reject@example.com',
+            'password' => Hash::make('StrongPass123!@#'),
+        ]);
+
+        Account::query()->create([
+            'user_id' => $user->id,
+            'nickname' => 'User',
+            'date_of_birth' => '1990-01-01',
+            'sex' => 'male',
+            'language' => 'en',
+            'timezone' => 'UTC',
+        ]);
+
+        $tokens = $this->app->make(\App\Auth\Services\AuthService::class)->issueTokenPair($user);
+
+        $response = $this->withCredentials()
+            ->withUnencryptedCookie(config('auth_tokens.cookies.access_name'), $tokens['access'])
+            ->patchJson('/api/account', [
+                'sensitive_words' => 'patient пацієнт doctor',
+            ]);
+
+        $response->assertStatus(422);
     }
 
     public function test_update_account_rejects_forbidden_fields(): void

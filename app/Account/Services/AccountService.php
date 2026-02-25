@@ -32,6 +32,7 @@ final readonly class AccountService
             'sex' => $data->sex,
             'language' => $data->language,
             'timezone' => $data->timezone,
+            'sensitive_words' => $data->sensitiveWords,
         ]);
 
         if ((string) $account->user_id !== (string) $this->user->id) {

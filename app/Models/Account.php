@@ -19,6 +19,7 @@ final class Account extends Model
         'sex',
         'language',
         'timezone',
+        'sensitive_words',
     ];
 
     /**
@@ -29,6 +30,18 @@ final class Account extends Model
         return [
             'date_of_birth' => 'date',
         ];
+    }
+
+    public function setSensitiveWordsAttribute(?string $value): void
+    {
+        if ($value === null || $value === '') {
+            $this->attributes['sensitive_words'] = null;
+
+            return;
+        }
+        $normalized = strtolower(trim(preg_replace('/\s+/', ' ', $value)));
+
+        $this->attributes['sensitive_words'] = $normalized === '' ? null : $normalized;
     }
 
     /**

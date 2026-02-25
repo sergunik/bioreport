@@ -30,7 +30,7 @@ final class JwtGuard implements Guard
             return $this->user;
         }
 
-        $token = $this->request->cookie($this->cookieName);
+        $token = $this->getTokenFromRequest();
 
         if ($token === null) {
             return null;
@@ -45,6 +45,16 @@ final class JwtGuard implements Guard
         $this->user = $this->provider->retrieveById($userId);
 
         return $this->user;
+    }
+
+    private function getTokenFromRequest(): ?string
+    {
+        $header = $this->request->header('Authorization');
+        if (is_string($header) && str_starts_with(strtolower($header), 'bearer ')) {
+            return trim(substr($header, 7));
+        }
+
+        return $this->request->cookie($this->cookieName);
     }
 
     public function validate(array $credentials = []): bool
