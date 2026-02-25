@@ -2,7 +2,7 @@ COMPOSE=docker-compose
 BASE=-f docker-compose.yml
 DEV=-f docker-compose.dev.yml
 
-.PHONY: up dev setup down exec front
+.PHONY: up dev setup down exec front lint test
 
 up:
 	$(COMPOSE) $(BASE) up -d
@@ -18,6 +18,12 @@ down:
 
 exec:
 	$(COMPOSE) exec app sh
+
+lint:
+	$(COMPOSE) exec app composer lint
+
+test:
+	$(COMPOSE) exec app composer test
 
 front:
 	chmod +x ./scripts/fetch-frontend.sh && ./scripts/fetch-frontend.sh

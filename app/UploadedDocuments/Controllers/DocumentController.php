@@ -101,7 +101,7 @@ final class DocumentController extends AuthenticatedController
     }
 
     /**
-     * Returns document metadata and ML results for the owner.
+     * Returns document metadata and processing results for the owner.
      */
     #[ScrambleResponse(200, 'Document metadata and processing results', examples: [['uuid' => '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d', 'file_size_bytes' => 1024, 'mime_type' => 'application/pdf', 'processed_at' => null, 'created_at' => '2025-02-16T12:00:00.000000Z', 'updated_at' => '2025-02-16T12:00:00.000000Z', 'job_status' => 'pending', 'parsed_result' => null, 'anonymised_result' => null, 'anonymised_artifacts' => null, 'normalized_result' => null]])]
     public function metadata(Request $request, string $uuid): JsonResponse
