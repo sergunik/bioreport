@@ -25,8 +25,8 @@ final class UpdateAccountRequest extends FormRequest
             'language' => ['sometimes', 'string', 'size:2'],
             /** @example "Europe/Kyiv" */
             'timezone' => ['sometimes', 'string', 'timezone'],
-            /** @example "ivan ivanov" */
-            'sensitive_words' => ['sometimes', 'nullable', 'string', 'max:50000', 'regex:/^([a-zA-Z]+(\s+[a-zA-Z]+)*)?$/'],
+            /** @example "ivan ivanov patient's 123" */
+            'sensitive_words' => ['sometimes', 'nullable', 'string', 'max:50000', 'regex:/^([a-zA-Z0-9\']+(\s+[a-zA-Z0-9\']+)*)?$/'],
             'user_id' => ['prohibited'],
             'sex' => ['prohibited'],
             'date_of_birth' => ['prohibited'],
