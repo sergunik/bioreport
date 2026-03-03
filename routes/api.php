@@ -54,6 +54,7 @@ Route::middleware('auth:jwt')->group(function (): void {
         Route::get('/{id}', [DiagnosticReportController::class, 'show']);
         Route::patch('/{id}', [DiagnosticReportController::class, 'update']);
         Route::delete('/{id}', [DiagnosticReportController::class, 'destroy']);
+        Route::post('/{id}/observations/batch', [ObservationController::class, 'storeBatch']);
         Route::post('/{id}/observations', [ObservationController::class, 'store']);
     });
 

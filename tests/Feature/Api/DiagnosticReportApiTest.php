@@ -180,7 +180,8 @@ final class DiagnosticReportApiTest extends TestCase
             'user_id' => $user->id,
             'diagnostic_report_id' => $report->id,
             'biomarker_name' => 'Hemoglobin',
-            'value' => 14,
+            'value_type' => 'numeric',
+            'value_number' => 14,
             'unit' => 'g/dL',
         ]);
 

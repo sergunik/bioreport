@@ -25,7 +25,10 @@ final class Observation extends Model
         'diagnostic_report_id',
         'biomarker_name',
         'biomarker_code',
-        'value',
+        'value_type',
+        'value_number',
+        'value_boolean',
+        'value_text',
         'unit',
         'reference_range_min',
         'reference_range_max',
@@ -38,10 +41,21 @@ final class Observation extends Model
     protected function casts(): array
     {
         return [
-            'value' => 'decimal:5',
+            'value_number' => 'decimal:5',
+            'value_boolean' => 'boolean',
             'reference_range_min' => 'decimal:5',
             'reference_range_max' => 'decimal:5',
         ];
+    }
+
+    public function getValueAttribute(): float|bool|string|null
+    {
+        return match ($this->value_type) {
+            'numeric' => $this->value_number !== null ? (float) $this->value_number : null,
+            'boolean' => $this->value_boolean,
+            'text' => $this->value_text,
+            default => null,
+        };
     }
 
     protected static function booted(): void
