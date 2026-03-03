@@ -13,7 +13,7 @@
 /.zed
 /auth.json
 /node_modules
-/docs/openapi/openapi.json
+/openapi.json
 /public/build
 /public/hot
 /public/storage

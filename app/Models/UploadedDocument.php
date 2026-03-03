@@ -28,6 +28,7 @@ final class UploadedDocument extends Model
         'anonymised_result',
         'anonymised_artifacts',
         'normalized_result',
+        'final_result',
         'transliteration_mapping',
         'processed_at',
     ];
@@ -41,6 +42,7 @@ final class UploadedDocument extends Model
             'file_size_bytes' => 'integer',
             'anonymised_artifacts' => 'array',
             'normalized_result' => 'array',
+            'final_result' => 'array',
             'transliteration_mapping' => 'array',
             'processed_at' => 'datetime',
         ];

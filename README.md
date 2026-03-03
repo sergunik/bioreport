@@ -37,8 +37,6 @@ Single-domain deployment: the same origin serves the frontend and the API.
 - **Health check:** `http://localhost/api/health`
 - **Logs:** `storage/logs/laravel.log`
 
-See [docs/self-host.md](docs/self-host.md) for how the frontend is included and how to deploy.
-
 ## Commands
 
 | Command              | Description |
@@ -48,7 +46,7 @@ See [docs/self-host.md](docs/self-host.md) for how the frontend is included and 
 | `composer test`      | Run PHPUnit tests |
 | `composer lint`      | Fix code style (Pint) |
 | `composer lint:test` | Check style without changing files |
-| `composer api`       | Generate OpenAPI spec to `docs/openapi/openapi.json` |
+| `composer api`       | Generate OpenAPI spec to `/openapi.json` |
 
 
 ## Git hooks (optional)
