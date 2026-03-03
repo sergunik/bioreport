@@ -71,5 +71,7 @@ Route::middleware('auth:jwt')->group(function (): void {
             ->whereUuid('uuid');
         Route::get('/{uuid}', [DocumentController::class, 'show'])
             ->whereUuid('uuid');
+        Route::delete('/{uuid}', [DocumentController::class, 'destroy'])
+            ->whereUuid('uuid');
     });
 });

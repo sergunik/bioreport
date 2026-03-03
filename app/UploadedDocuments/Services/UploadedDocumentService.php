@@ -124,6 +124,29 @@ final readonly class UploadedDocumentService
         return $stream;
     }
 
+    /**
+     * Deletes document and related file for the current user.
+     * Returns false when document does not exist.
+     */
+    public function deleteByUuid(string $uuid): bool
+    {
+        $document = $this->getByUuid($uuid);
+        if ($document === null) {
+            return false;
+        }
+
+        $path = $this->relativePath($document->uuid);
+        DB::transaction(function () use ($document, $path): void {
+            if ($this->storage->exists($path)) {
+                $this->storage->delete($path);
+            }
+
+            $document->delete();
+        });
+
+        return true;
+    }
+
     private function findByUserAndHash(string $fileHash): ?UploadedDocument
     {
         return $this->baseQuery()

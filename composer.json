@@ -52,7 +52,7 @@
             "./vendor/bin/pint --test"
         ],
         "api": [
-            "@php artisan scramble:export --path=docs/openapi/openapi.json"
+            "@php artisan scramble:export --path=openapi.json"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

@@ -27,11 +27,15 @@ final class DocumentMetadataResource extends JsonResource
             'processed_at' => $this->processed_at?->toIso8601String(),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
+            'status' => $this->relationLoaded('pdfJob') ? $this->pdfJob?->status : null,
+            'error_message' => $this->relationLoaded('pdfJob') ? $this->pdfJob?->error_message : null,
             'job_status' => $this->relationLoaded('pdfJob') ? $this->pdfJob?->status : null,
             'parsed_result' => $this->parsed_result,
             'anonymised_result' => $this->anonymised_result,
             'anonymised_artifacts' => $this->anonymised_artifacts,
             'normalized_result' => $this->normalized_result,
+            'transliteration_mapping' => $this->transliteration_mapping,
+            'final_result' => $this->final_result,
         ];
     }
 }

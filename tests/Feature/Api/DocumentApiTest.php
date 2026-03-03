@@ -47,7 +47,9 @@ final class DocumentApiTest extends TestCase
         ?string $parsedResult = null,
         ?string $anonymisedResult = null,
         ?array $anonymisedArtifacts = null,
-        ?array $normalizedResult = null
+        ?array $normalizedResult = null,
+        ?array $transliterationMapping = null,
+        ?array $finalResult = null
     ): UploadedDocument {
         $doc = new UploadedDocument([
             'uuid' => $uuid,
@@ -59,6 +61,8 @@ final class DocumentApiTest extends TestCase
             'anonymised_result' => $anonymisedResult,
             'anonymised_artifacts' => $anonymisedArtifacts,
             'normalized_result' => $normalizedResult,
+            'transliteration_mapping' => $transliterationMapping,
+            'final_result' => $finalResult,
         ]);
         $doc->user_id = $user->id;
         $doc->save();
@@ -253,8 +257,20 @@ final class DocumentApiTest extends TestCase
             'parsed-text',
             'anonymised-text',
             ['entities' => []],
-            ['key' => 'normalized']
+            ['key' => 'normalized'],
+            ['map' => ['iv' => 'i.v.']],
+            ['sections' => ['diagnosis' => 'ok']]
         );
+        $document = UploadedDocument::withoutGlobalScope('user')
+            ->where('user_id', $user->id)
+            ->where('uuid', $uuid)
+            ->first();
+        self::assertNotNull($document);
+        PdfJob::create([
+            'uploaded_document_id' => $document->id,
+            'status' => 'failed',
+            'error_message' => 'Worker timeout',
+        ]);
 
         $response = $this->withAuth($user)->getJson('/api/documents/'.$uuid.'/metadata');
 
@@ -265,6 +281,10 @@ final class DocumentApiTest extends TestCase
         $response->assertJsonPath('anonymised_result', 'anonymised-text');
         $response->assertJsonPath('anonymised_artifacts.entities', []);
         $response->assertJsonPath('normalized_result.key', 'normalized');
+        $response->assertJsonPath('status', 'failed');
+        $response->assertJsonPath('error_message', 'Worker timeout');
+        $response->assertJsonPath('transliteration_mapping.map.iv', 'i.v.');
+        $response->assertJsonPath('final_result.sections.diagnosis', 'ok');
     }
 
     public function test_metadata_returns_404_when_not_owner(): void
@@ -282,10 +302,78 @@ final class DocumentApiTest extends TestCase
         $response->assertStatus(404);
     }
 
+    public function test_destroy_deletes_document_job_and_storage_file(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'doc-delete@example.com',
+            'password' => Hash::make('StrongPass123!@#'),
+        ]);
+        $uuid = '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d';
+        $doc = $this->createUploadedDocumentForUser($user, $uuid, 100, str_repeat('a', 64));
+        PdfJob::create([
+            'uploaded_document_id' => $doc->id,
+            'status' => 'pending',
+        ]);
+        $path = $user->id.'/'.$uuid.'.pdf';
+        Storage::disk('uploaded_documents')->put($path, 'binary pdf content');
+
+        $response = $this->withAuth($user)->deleteJson('/api/documents/'.$uuid);
+
+        $response->assertStatus(204);
+        self::assertNull(UploadedDocument::withoutGlobalScope('user')->find($doc->id));
+        self::assertNull(PdfJob::query()->where('uploaded_document_id', $doc->id)->first());
+        self::assertFalse(Storage::disk('uploaded_documents')->exists($path));
+    }
+
+    public function test_destroy_succeeds_when_storage_file_missing(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'doc-delete-missing-file@example.com',
+            'password' => Hash::make('StrongPass123!@#'),
+        ]);
+        $uuid = '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d';
+        $doc = $this->createUploadedDocumentForUser($user, $uuid, 100, str_repeat('a', 64));
+        PdfJob::create([
+            'uploaded_document_id' => $doc->id,
+            'status' => 'pending',
+        ]);
+
+        $response = $this->withAuth($user)->deleteJson('/api/documents/'.$uuid);
+
+        $response->assertStatus(204);
+        self::assertNull(UploadedDocument::withoutGlobalScope('user')->find($doc->id));
+        self::assertNull(PdfJob::query()->where('uploaded_document_id', $doc->id)->first());
+    }
+
+    public function test_destroy_returns_404_when_not_owner(): void
+    {
+        $owner = User::factory()->create(['email' => 'owner-doc-delete@example.com']);
+        $other = User::factory()->create([
+            'email' => 'other-doc-delete@example.com',
+            'password' => Hash::make('StrongPass123!@#'),
+        ]);
+        $uuid = '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d';
+        $doc = $this->createUploadedDocumentForUser($owner, $uuid, 100, str_repeat('a', 64));
+        PdfJob::create([
+            'uploaded_document_id' => $doc->id,
+            'status' => 'pending',
+        ]);
+        $path = $owner->id.'/'.$uuid.'.pdf';
+        Storage::disk('uploaded_documents')->put($path, 'binary pdf content');
+
+        $response = $this->withAuth($other)->deleteJson('/api/documents/'.$uuid);
+
+        $response->assertStatus(404);
+        self::assertNotNull(UploadedDocument::withoutGlobalScope('user')->find($doc->id));
+        self::assertNotNull(PdfJob::query()->where('uploaded_document_id', $doc->id)->first());
+        self::assertTrue(Storage::disk('uploaded_documents')->exists($path));
+    }
+
     public function test_unauthenticated_requests_receive_401(): void
     {
         $this->post('/api/documents', [], ['Accept' => 'application/json'])->assertStatus(401);
         $this->getJson('/api/documents')->assertStatus(401);
+        $this->deleteJson('/api/documents/9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d')->assertStatus(401);
     }
 
     public function test_show_with_invalid_uuid_format_returns_404(): void
