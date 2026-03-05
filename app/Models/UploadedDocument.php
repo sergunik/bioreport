@@ -29,7 +29,6 @@ final class UploadedDocument extends Model
         'anonymised_artifacts',
         'normalized_result',
         'final_result',
-        'transliteration_mapping',
         'processed_at',
     ];
 

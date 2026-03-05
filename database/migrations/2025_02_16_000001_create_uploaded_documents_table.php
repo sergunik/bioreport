@@ -18,8 +18,12 @@ return new class extends Migration
             $table->unsignedBigInteger('file_size_bytes');
             $table->enum('mime_type', ['application/pdf']);
             $table->char('file_hash_sha256', 64);
-            $table->jsonb('ml_raw_result')->nullable();
-            $table->jsonb('ml_normalized_result')->nullable();
+            $table->text('parsed_result')->nullable();
+            $table->text('anonymised_result')->nullable();
+            $table->jsonb('anonymised_artifacts')->nullable();
+            $table->jsonb('normalized_result')->nullable();
+            $table->json('final_result')->nullable();
+            $table->jsonb('transliteration_mapping')->nullable();
             $table->timestamp('processed_at')->nullable();
             $table->timestamps();
         });
