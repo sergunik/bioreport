@@ -6,6 +6,7 @@ namespace App\Observation\Controllers;
 
 use App\Http\Controllers\AuthenticatedController;
 use App\Observation\DTOs\CreateObservationDto;
+use App\Observation\Requests\StoreObservationBatchRequest;
 use App\Observation\Requests\StoreObservationRequest;
 use App\Observation\Requests\UpdateObservationRequest;
 use App\Observation\Resources\ObservationResource;
@@ -32,7 +33,7 @@ final class ObservationController extends AuthenticatedController
     /**
      * Creates an observation for a diagnostic report owned by the current user.
      */
-    #[ScrambleResponse(201, 'Created observation', examples: [['id' => 1, 'biomarker_name' => 'Hemoglobin', 'biomarker_code' => '718-7', 'value' => 14.2, 'unit' => 'g/dL', 'reference_range_min' => 12.0, 'reference_range_max' => 16.0, 'reference_unit' => 'g/dL', 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z']])]
+    #[ScrambleResponse(201, 'Created observation', examples: [['id' => 1, 'biomarker_name' => 'Hemoglobin', 'biomarker_code' => '718-7', 'value_type' => 'numeric', 'value' => 14.2, 'unit' => 'g/dL', 'reference_range_min' => 12.0, 'reference_range_max' => 16.0, 'reference_unit' => 'g/dL', 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z']])]
     public function store(StoreObservationRequest $request, int $diagnosticReportId): JsonResponse
     {
         try {
@@ -49,9 +50,44 @@ final class ObservationController extends AuthenticatedController
     }
 
     /**
+     * Creates observations in a single transaction for one report.
+     */
+    #[ScrambleResponse(201, 'Created observations batch', examples: [[
+        [
+            'id' => 1,
+            'biomarker_name' => 'Hemoglobin',
+            'biomarker_code' => '718-7',
+            'value_type' => 'numeric',
+            'value' => 14.2,
+            'unit' => 'g/dL',
+            'reference_range_min' => 12.0,
+            'reference_range_max' => 16.0,
+            'reference_unit' => 'g/dL',
+            'created_at' => '2025-02-09T12:00:00.000000Z',
+            'updated_at' => '2025-02-09T12:00:00.000000Z',
+        ],
+    ]])]
+    public function storeBatch(StoreObservationBatchRequest $request, int $diagnosticReportId): JsonResponse
+    {
+        try {
+            $observations = $this->observationService->createBatchForReport(
+                $diagnosticReportId,
+                $request->validated('observations'),
+            );
+        } catch (InvalidArgumentException) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json(
+            ObservationResource::collection($observations)->toArray($request),
+            Response::HTTP_CREATED,
+        );
+    }
+
+    /**
      * Returns a single observation for the current user.
      */
-    #[ScrambleResponse(200, 'Single observation', examples: [['id' => 1, 'biomarker_name' => 'Hemoglobin', 'biomarker_code' => '718-7', 'value' => 14.2, 'unit' => 'g/dL', 'reference_range_min' => null, 'reference_range_max' => null, 'reference_unit' => null, 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z']])]
+    #[ScrambleResponse(200, 'Single observation', examples: [['id' => 1, 'biomarker_name' => 'Hemoglobin', 'biomarker_code' => '718-7', 'value_type' => 'numeric', 'value' => 14.2, 'unit' => 'g/dL', 'reference_range_min' => null, 'reference_range_max' => null, 'reference_unit' => null, 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z']])]
     public function show(Request $request, int $id): JsonResponse
     {
         $observation = $this->observationService->getById($id);
@@ -65,7 +101,7 @@ final class ObservationController extends AuthenticatedController
     /**
      * Updates an observation for the current user.
      */
-    #[ScrambleResponse(200, 'Updated observation', examples: [['id' => 1, 'biomarker_name' => 'Hemoglobin', 'biomarker_code' => '718-7', 'value' => 13.8, 'unit' => 'g/dL', 'reference_range_min' => 12.0, 'reference_range_max' => 16.0, 'reference_unit' => 'g/dL', 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:30:00.000000Z']])]
+    #[ScrambleResponse(200, 'Updated observation', examples: [['id' => 1, 'biomarker_name' => 'Hemoglobin', 'biomarker_code' => '718-7', 'value_type' => 'numeric', 'value' => 13.8, 'unit' => 'g/dL', 'reference_range_min' => 12.0, 'reference_range_max' => 16.0, 'reference_unit' => 'g/dL', 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:30:00.000000Z']])]
     public function update(UpdateObservationRequest $request, int $id): JsonResponse
     {
         try {

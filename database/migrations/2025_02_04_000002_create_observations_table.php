@@ -16,8 +16,11 @@ return new class extends Migration
             $table->foreignId('diagnostic_report_id')->constrained()->cascadeOnDelete();
             $table->string('biomarker_name');
             $table->string('biomarker_code')->nullable();
-            $table->decimal('value', 15, 5);
-            $table->string('unit', 64);
+            $table->string('value_type', 16)->default('numeric');
+            $table->decimal('value_number', 15, 5)->nullable();
+            $table->boolean('value_boolean')->nullable();
+            $table->text('value_text')->nullable();
+            $table->string('unit', 64)->nullable();
             $table->decimal('reference_range_min', 15, 5)->nullable();
             $table->decimal('reference_range_max', 15, 5)->nullable();
             $table->string('reference_unit', 64)->nullable();

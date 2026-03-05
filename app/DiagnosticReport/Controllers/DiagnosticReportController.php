@@ -63,7 +63,7 @@ final class DiagnosticReportController extends AuthenticatedController
     /**
      * Returns a single diagnostic report for the current user.
      */
-    #[ScrambleResponse(200, 'Single report', examples: [['id' => 1, 'title' => 'CBC Panel', 'notes' => null, 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z', 'observations' => [['id' => 1, 'biomarker_name' => 'Hemoglobin', 'biomarker_code' => '718-7', 'value' => 14.2, 'unit' => 'g/dL', 'reference_range_min' => null, 'reference_range_max' => null, 'reference_unit' => null, 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z']]]])]
+    #[ScrambleResponse(200, 'Single report', examples: [['id' => 1, 'title' => 'CBC Panel', 'notes' => null, 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z', 'observations' => [['id' => 1, 'biomarker_name' => 'Hemoglobin', 'biomarker_code' => '718-7', 'value_type' => 'numeric', 'value' => 14.2, 'unit' => 'g/dL', 'reference_range_min' => null, 'reference_range_max' => null, 'reference_unit' => null, 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z']]]])]
     public function show(Request $request, int $id): JsonResponse
     {
         $report = $this->diagnosticReportService->getById($id);

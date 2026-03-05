@@ -34,7 +34,6 @@ final class DocumentMetadataResource extends JsonResource
             'anonymised_result' => $this->anonymised_result,
             'anonymised_artifacts' => $this->anonymised_artifacts,
             'normalized_result' => $this->normalized_result,
-            'transliteration_mapping' => $this->transliteration_mapping,
             'final_result' => $this->final_result,
         ];
     }

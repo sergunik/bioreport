@@ -41,4 +41,34 @@ final class ObservationModelTest extends TestCase
         $obs->id = 1;
         self::assertFalse($obs->hasReferenceRange());
     }
+
+    public function test_value_accessor_returns_numeric_value_for_numeric_type(): void
+    {
+        $obs = new Observation([
+            'value_type' => 'numeric',
+            'value_number' => 10.5,
+        ]);
+
+        self::assertSame(10.5, $obs->value);
+    }
+
+    public function test_value_accessor_returns_boolean_value_for_boolean_type(): void
+    {
+        $obs = new Observation([
+            'value_type' => 'boolean',
+            'value_boolean' => true,
+        ]);
+
+        self::assertTrue($obs->value);
+    }
+
+    public function test_value_accessor_returns_text_value_for_text_type(): void
+    {
+        $obs = new Observation([
+            'value_type' => 'text',
+            'value_text' => 'negative',
+        ]);
+
+        self::assertSame('negative', $obs->value);
+    }
 }

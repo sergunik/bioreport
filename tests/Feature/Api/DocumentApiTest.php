@@ -48,7 +48,6 @@ final class DocumentApiTest extends TestCase
         ?string $anonymisedResult = null,
         ?array $anonymisedArtifacts = null,
         ?array $normalizedResult = null,
-        ?array $transliterationMapping = null,
         ?array $finalResult = null
     ): UploadedDocument {
         $doc = new UploadedDocument([
@@ -61,7 +60,6 @@ final class DocumentApiTest extends TestCase
             'anonymised_result' => $anonymisedResult,
             'anonymised_artifacts' => $anonymisedArtifacts,
             'normalized_result' => $normalizedResult,
-            'transliteration_mapping' => $transliterationMapping,
             'final_result' => $finalResult,
         ]);
         $doc->user_id = $user->id;
@@ -258,7 +256,6 @@ final class DocumentApiTest extends TestCase
             'anonymised-text',
             ['entities' => []],
             ['key' => 'normalized'],
-            ['map' => ['iv' => 'i.v.']],
             ['sections' => ['diagnosis' => 'ok']]
         );
         $document = UploadedDocument::withoutGlobalScope('user')
@@ -283,7 +280,6 @@ final class DocumentApiTest extends TestCase
         $response->assertJsonPath('normalized_result.key', 'normalized');
         $response->assertJsonPath('status', 'failed');
         $response->assertJsonPath('error_message', 'Worker timeout');
-        $response->assertJsonPath('transliteration_mapping.map.iv', 'i.v.');
         $response->assertJsonPath('final_result.sections.diagnosis', 'ok');
     }
 

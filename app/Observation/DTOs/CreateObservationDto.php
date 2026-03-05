@@ -9,10 +9,11 @@ final readonly class CreateObservationDto
     public function __construct(
         public string $biomarkerName,
         public ?string $biomarkerCode,
-        public string $value,
-        public string $unit,
-        public ?string $referenceRangeMin,
-        public ?string $referenceRangeMax,
+        public string $valueType,
+        public mixed $value,
+        public ?string $unit,
+        public ?float $referenceRangeMin,
+        public ?float $referenceRangeMax,
         public ?string $referenceUnit,
     ) {}
 
@@ -21,10 +22,11 @@ final readonly class CreateObservationDto
         return new self(
             biomarkerName: (string) $data['biomarker_name'],
             biomarkerCode: isset($data['biomarker_code']) ? (string) $data['biomarker_code'] : null,
-            value: (string) $data['value'],
-            unit: (string) $data['unit'],
-            referenceRangeMin: isset($data['reference_range_min']) ? (string) $data['reference_range_min'] : null,
-            referenceRangeMax: isset($data['reference_range_max']) ? (string) $data['reference_range_max'] : null,
+            valueType: isset($data['value_type']) ? (string) $data['value_type'] : 'numeric',
+            value: $data['value'],
+            unit: isset($data['unit']) ? (string) $data['unit'] : null,
+            referenceRangeMin: isset($data['reference_range_min']) ? (float) $data['reference_range_min'] : null,
+            referenceRangeMax: isset($data['reference_range_max']) ? (float) $data['reference_range_max'] : null,
             referenceUnit: isset($data['reference_unit']) ? (string) $data['reference_unit'] : null,
         );
     }

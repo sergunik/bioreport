@@ -96,7 +96,8 @@ final class ObservationApiTest extends TestCase
             'user_id' => $user->id,
             'diagnostic_report_id' => $report->id,
             'biomarker_name' => 'Glucose',
-            'value' => 5.2,
+            'value_type' => 'numeric',
+            'value_number' => 5.2,
             'unit' => 'mmol/L',
         ]);
 
@@ -119,7 +120,8 @@ final class ObservationApiTest extends TestCase
             'user_id' => $owner->id,
             'diagnostic_report_id' => $report->id,
             'biomarker_name' => 'Glucose',
-            'value' => 5.2,
+            'value_type' => 'numeric',
+            'value_number' => 5.2,
             'unit' => 'mmol/L',
         ]);
 
@@ -140,7 +142,8 @@ final class ObservationApiTest extends TestCase
             'user_id' => $owner->id,
             'diagnostic_report_id' => $report->id,
             'biomarker_name' => 'Glucose',
-            'value' => 5.2,
+            'value_type' => 'numeric',
+            'value_number' => 5.2,
             'unit' => 'mmol/L',
         ]);
 
@@ -162,7 +165,8 @@ final class ObservationApiTest extends TestCase
             'user_id' => $user->id,
             'diagnostic_report_id' => $report->id,
             'biomarker_name' => 'Glucose',
-            'value' => 5.2,
+            'value_type' => 'numeric',
+            'value_number' => 5.2,
             'unit' => 'mmol/L',
         ]);
 
@@ -174,7 +178,7 @@ final class ObservationApiTest extends TestCase
         $response->assertJsonPath('value', 5.5);
 
         $observation->refresh();
-        self::assertSame(5.5, (float) $observation->value);
+        self::assertSame(5.5, (float) $observation->value_number);
     }
 
     public function test_destroy_observation(): void
@@ -188,7 +192,8 @@ final class ObservationApiTest extends TestCase
             'user_id' => $user->id,
             'diagnostic_report_id' => $report->id,
             'biomarker_name' => 'Glucose',
-            'value' => 5.2,
+            'value_type' => 'numeric',
+            'value_number' => 5.2,
             'unit' => 'mmol/L',
         ]);
 
@@ -196,6 +201,160 @@ final class ObservationApiTest extends TestCase
 
         $response->assertStatus(204);
         self::assertNull(Observation::withoutGlobalScope('user')->find($observation->id));
+    }
+
+    public function test_store_creates_boolean_observation(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'obs-store-bool@example.com',
+            'password' => Hash::make('StrongPass123!@#'),
+        ]);
+        $report = DiagnosticReport::withoutGlobalScope('user')->create([
+            'user_id' => $user->id,
+        ]);
+
+        $response = $this->withAuth($user)->postJson('/api/diagnostic-reports/'.$report->id.'/observations', [
+            'biomarker_name' => 'Pregnancy Test',
+            'value_type' => 'boolean',
+            'value' => true,
+        ]);
+
+        $response->assertStatus(201);
+        $response->assertJsonPath('value_type', 'boolean');
+        $response->assertJsonPath('value', true);
+        $response->assertJsonPath('unit', null);
+    }
+
+    public function test_store_returns_422_for_numeric_without_unit(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'obs-store-422@example.com',
+            'password' => Hash::make('StrongPass123!@#'),
+        ]);
+        $report = DiagnosticReport::withoutGlobalScope('user')->create([
+            'user_id' => $user->id,
+        ]);
+
+        $response = $this->withAuth($user)->postJson('/api/diagnostic-reports/'.$report->id.'/observations', [
+            'biomarker_name' => 'Hemoglobin',
+            'value_type' => 'numeric',
+            'value' => 14.2,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['unit']);
+    }
+
+    public function test_store_returns_422_for_reference_range_on_non_numeric(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'obs-store-422-ref@example.com',
+            'password' => Hash::make('StrongPass123!@#'),
+        ]);
+        $report = DiagnosticReport::withoutGlobalScope('user')->create([
+            'user_id' => $user->id,
+        ]);
+
+        $response = $this->withAuth($user)->postJson('/api/diagnostic-reports/'.$report->id.'/observations', [
+            'biomarker_name' => 'Pregnancy Test',
+            'value_type' => 'boolean',
+            'value' => false,
+            'reference_range_min' => 0,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['reference_range_min']);
+    }
+
+    public function test_update_allows_value_type_change_and_clears_reference_fields(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'obs-update-type@example.com',
+            'password' => Hash::make('StrongPass123!@#'),
+        ]);
+        $report = DiagnosticReport::withoutGlobalScope('user')->create(['user_id' => $user->id]);
+        $observation = Observation::withoutGlobalScope('user')->create([
+            'user_id' => $user->id,
+            'diagnostic_report_id' => $report->id,
+            'biomarker_name' => 'CRP',
+            'value_type' => 'numeric',
+            'value_number' => 5.2,
+            'unit' => 'mg/L',
+            'reference_range_min' => 0.0,
+            'reference_range_max' => 5.0,
+            'reference_unit' => 'mg/L',
+        ]);
+
+        $response = $this->withAuth($user)->patchJson('/api/observations/'.$observation->id, [
+            'value_type' => 'text',
+            'value' => 'negative',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('value_type', 'text');
+        $response->assertJsonPath('value', 'negative');
+        $response->assertJsonPath('reference_range_min', null);
+        $response->assertJsonPath('reference_range_max', null);
+        $response->assertJsonPath('reference_unit', null);
+    }
+
+    public function test_store_batch_creates_observations_transactionally(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'obs-batch@example.com',
+            'password' => Hash::make('StrongPass123!@#'),
+        ]);
+        $report = DiagnosticReport::withoutGlobalScope('user')->create(['user_id' => $user->id]);
+
+        $response = $this->withAuth($user)->postJson('/api/diagnostic-reports/'.$report->id.'/observations/batch', [
+            'observations' => [
+                [
+                    'biomarker_name' => 'Hemoglobin',
+                    'value_type' => 'numeric',
+                    'value' => 14.2,
+                    'unit' => 'g/dL',
+                ],
+                [
+                    'biomarker_name' => 'COVID Antigen',
+                    'value_type' => 'boolean',
+                    'value' => false,
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(201);
+        $response->assertJsonCount(2);
+        self::assertSame(2, Observation::withoutGlobalScope('user')->where('diagnostic_report_id', $report->id)->count());
+    }
+
+    public function test_store_batch_rolls_back_when_one_item_invalid(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'obs-batch-rollback@example.com',
+            'password' => Hash::make('StrongPass123!@#'),
+        ]);
+        $report = DiagnosticReport::withoutGlobalScope('user')->create(['user_id' => $user->id]);
+
+        $response = $this->withAuth($user)->postJson('/api/diagnostic-reports/'.$report->id.'/observations/batch', [
+            'observations' => [
+                [
+                    'biomarker_name' => 'Hemoglobin',
+                    'value_type' => 'numeric',
+                    'value' => 14.2,
+                    'unit' => 'g/dL',
+                ],
+                [
+                    'biomarker_name' => 'COVID Antigen',
+                    'value_type' => 'boolean',
+                    'value' => false,
+                    'reference_range_min' => 0.0,
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['observations.1.reference_range_min']);
+        self::assertSame(0, Observation::withoutGlobalScope('user')->where('diagnostic_report_id', $report->id)->count());
     }
 
     public function test_unauthenticated_requests_receive_401(): void

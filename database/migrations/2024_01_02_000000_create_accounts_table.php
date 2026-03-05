@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('sex', 16);
             $table->string('language', 2)->nullable();
             $table->string('timezone', 64)->nullable();
+            $table->text('sensitive_words')->nullable();
             $table->timestamps();
             $table->unique('user_id');
         });
