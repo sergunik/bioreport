@@ -12,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('pdf_jobs', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('uploaded_document_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('uploaded_document_uuid')->constrained('uploaded_documents', 'uuid')->cascadeOnDelete();
             $table->enum('status', ['pending', 'processing', 'done', 'failed'])->default('pending');
             $table->unsignedInteger('attempts')->default(0);
             $table->text('error_message')->nullable();
@@ -22,7 +22,7 @@ return new class extends Migration
 
         Schema::table('pdf_jobs', function (Blueprint $table): void {
             $table->index(['status', 'locked_at']);
-            $table->index('uploaded_document_id');
+            $table->index('uploaded_document_uuid');
         });
     }
 

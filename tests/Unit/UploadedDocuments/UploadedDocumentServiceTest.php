@@ -47,7 +47,7 @@ final class UploadedDocumentServiceTest extends TestCase
         self::assertNotNull($doc);
         self::assertSame($uuid, $doc->uuid);
         self::assertSame(11, $doc->file_size_bytes);
-        self::assertNotNull(PdfJob::where('uploaded_document_id', $doc->id)->first());
+        self::assertNotNull(PdfJob::where('uploaded_document_uuid', $doc->uuid)->first());
     }
 
     /**

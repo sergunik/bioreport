@@ -23,6 +23,7 @@ final class DiagnosticReportResource extends JsonResource
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
             'observations' => ObservationResource::collection($this->whenLoaded('observations')),
+            'document_uuids' => $this->whenLoaded('uploadedDocuments', fn () => $this->uploadedDocuments->pluck('uuid')->values()->all(), []),
         ];
     }
 }

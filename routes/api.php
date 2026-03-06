@@ -10,6 +10,7 @@ use App\Auth\Controllers\RefreshController;
 use App\Auth\Controllers\RegisterController;
 use App\Auth\Controllers\ResetPasswordController;
 use App\DiagnosticReport\Controllers\DiagnosticReportController;
+use App\DocumentExtraction\Controllers\DocumentExtractionController;
 use App\Me\Controllers\PrivacyController;
 use App\Me\Controllers\ProfileController;
 use App\Me\Controllers\SecurityController;
@@ -34,6 +35,8 @@ Route::prefix('auth')->group(function (): void {
 });
 
 Route::middleware('auth:jwt')->group(function (): void {
+    Route::post('document-extraction', [DocumentExtractionController::class, 'store']);
+
     Route::prefix('account')->group(function (): void {
         Route::post('/', [AccountController::class, 'store']);
         Route::get('/', [AccountController::class, 'show']);

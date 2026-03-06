@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,6 +16,12 @@ use Illuminate\Support\Facades\Auth;
  */
 final class UploadedDocument extends Model
 {
+    protected $primaryKey = 'uuid';
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
     /**
      * @var list<string>
      */
@@ -73,6 +80,22 @@ final class UploadedDocument extends Model
      */
     public function pdfJob(): HasOne
     {
-        return $this->hasOne(PdfJob::class);
+        return $this->hasOne(PdfJob::class, 'uploaded_document_uuid', 'uuid');
+    }
+
+    /**
+     * @return BelongsToMany<DiagnosticReport, $this>
+     */
+    public function diagnosticReports(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            DiagnosticReport::class,
+            'diagnostic_report_documents',
+            'uploaded_document_uuid',
+            'diagnostic_report_id',
+            'uuid',
+            'id',
+        )
+            ->withTimestamps();
     }
 }
