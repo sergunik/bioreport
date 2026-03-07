@@ -62,6 +62,7 @@ Route::middleware('auth:jwt')->group(function (): void {
     });
 
     Route::prefix('observations')->group(function (): void {
+        Route::get('/', [ObservationController::class, 'index']);
         Route::get('/{id}', [ObservationController::class, 'show']);
         Route::patch('/{id}', [ObservationController::class, 'update']);
         Route::delete('/{id}', [ObservationController::class, 'destroy']);
