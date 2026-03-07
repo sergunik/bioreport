@@ -88,7 +88,7 @@ final class DocumentApiTest extends TestCase
         $doc = UploadedDocument::withoutGlobalScope('user')->where('user_id', $user->id)->first();
         self::assertNotNull($doc);
         self::assertSame($response->json('uuid'), $doc->uuid);
-        self::assertNotNull(PdfJob::where('uploaded_document_id', $doc->id)->first());
+        self::assertNotNull(PdfJob::where('uploaded_document_uuid', $doc->uuid)->first());
     }
 
     public function test_store_duplicate_returns_existing_and_creates_no_new_job(): void
@@ -264,7 +264,7 @@ final class DocumentApiTest extends TestCase
             ->first();
         self::assertNotNull($document);
         PdfJob::create([
-            'uploaded_document_id' => $document->id,
+            'uploaded_document_uuid' => $document->uuid,
             'status' => 'failed',
             'error_message' => 'Worker timeout',
         ]);
@@ -307,7 +307,7 @@ final class DocumentApiTest extends TestCase
         $uuid = '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d';
         $doc = $this->createUploadedDocumentForUser($user, $uuid, 100, str_repeat('a', 64));
         PdfJob::create([
-            'uploaded_document_id' => $doc->id,
+            'uploaded_document_uuid' => $doc->uuid,
             'status' => 'pending',
         ]);
         $path = $user->id.'/'.$uuid.'.pdf';
@@ -316,8 +316,8 @@ final class DocumentApiTest extends TestCase
         $response = $this->withAuth($user)->deleteJson('/api/documents/'.$uuid);
 
         $response->assertStatus(204);
-        self::assertNull(UploadedDocument::withoutGlobalScope('user')->find($doc->id));
-        self::assertNull(PdfJob::query()->where('uploaded_document_id', $doc->id)->first());
+        self::assertNull(UploadedDocument::withoutGlobalScope('user')->find($doc->uuid));
+        self::assertNull(PdfJob::query()->where('uploaded_document_uuid', $doc->uuid)->first());
         self::assertFalse(Storage::disk('uploaded_documents')->exists($path));
     }
 
@@ -330,15 +330,15 @@ final class DocumentApiTest extends TestCase
         $uuid = '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d';
         $doc = $this->createUploadedDocumentForUser($user, $uuid, 100, str_repeat('a', 64));
         PdfJob::create([
-            'uploaded_document_id' => $doc->id,
+            'uploaded_document_uuid' => $doc->uuid,
             'status' => 'pending',
         ]);
 
         $response = $this->withAuth($user)->deleteJson('/api/documents/'.$uuid);
 
         $response->assertStatus(204);
-        self::assertNull(UploadedDocument::withoutGlobalScope('user')->find($doc->id));
-        self::assertNull(PdfJob::query()->where('uploaded_document_id', $doc->id)->first());
+        self::assertNull(UploadedDocument::withoutGlobalScope('user')->find($doc->uuid));
+        self::assertNull(PdfJob::query()->where('uploaded_document_uuid', $doc->uuid)->first());
     }
 
     public function test_destroy_returns_404_when_not_owner(): void
@@ -351,7 +351,7 @@ final class DocumentApiTest extends TestCase
         $uuid = '9d3f8a2b-1c4e-4f5a-b6d7-8e9f0a1b2c3d';
         $doc = $this->createUploadedDocumentForUser($owner, $uuid, 100, str_repeat('a', 64));
         PdfJob::create([
-            'uploaded_document_id' => $doc->id,
+            'uploaded_document_uuid' => $doc->uuid,
             'status' => 'pending',
         ]);
         $path = $owner->id.'/'.$uuid.'.pdf';
@@ -360,8 +360,8 @@ final class DocumentApiTest extends TestCase
         $response = $this->withAuth($other)->deleteJson('/api/documents/'.$uuid);
 
         $response->assertStatus(404);
-        self::assertNotNull(UploadedDocument::withoutGlobalScope('user')->find($doc->id));
-        self::assertNotNull(PdfJob::query()->where('uploaded_document_id', $doc->id)->first());
+        self::assertNotNull(UploadedDocument::withoutGlobalScope('user')->find($doc->uuid));
+        self::assertNotNull(PdfJob::query()->where('uploaded_document_uuid', $doc->uuid)->first());
         self::assertTrue(Storage::disk('uploaded_documents')->exists($path));
     }
 

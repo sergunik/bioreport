@@ -32,7 +32,7 @@ final readonly class DiagnosticReportService
         return DiagnosticReport::withoutGlobalScope('user')
             ->where('user_id', $this->user->id)
             ->orderByDesc('created_at')
-            ->with('observations')
+            ->with(['observations', 'uploadedDocuments'])
             ->get();
     }
 
@@ -40,7 +40,7 @@ final readonly class DiagnosticReportService
     {
         return DiagnosticReport::withoutGlobalScope('user')
             ->where('user_id', $this->user->id)
-            ->with('observations')
+            ->with(['observations', 'uploadedDocuments'])
             ->whereKey($id)
             ->first();
     }

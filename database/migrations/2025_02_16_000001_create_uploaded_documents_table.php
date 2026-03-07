@@ -11,8 +11,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('uploaded_documents', function (Blueprint $table): void {
-            $table->id();
-            $table->uuid()->unique();
+            $table->uuid('uuid')->primary();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->enum('storage_disk', ['local', 's3']);
             $table->unsignedBigInteger('file_size_bytes');

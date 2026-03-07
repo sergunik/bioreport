@@ -57,7 +57,7 @@ final readonly class UploadedDocumentService
                 $document->save();
 
                 PdfJob::create([
-                    'uploaded_document_id' => $document->id,
+                    'uploaded_document_uuid' => $document->uuid,
                     'status' => 'pending',
                 ]);
 

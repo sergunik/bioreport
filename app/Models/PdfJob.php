@@ -16,7 +16,7 @@ final class PdfJob extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'uploaded_document_id',
+        'uploaded_document_uuid',
         'status',
         'attempts',
         'error_message',
@@ -39,6 +39,6 @@ final class PdfJob extends Model
      */
     public function uploadedDocument(): BelongsTo
     {
-        return $this->belongsTo(UploadedDocument::class);
+        return $this->belongsTo(UploadedDocument::class, 'uploaded_document_uuid', 'uuid');
     }
 }
