@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Observation\DTOs\CreateObservationDto;
 use App\Observation\Value\ObservationUpdatePayloadNormalizer;
 use App\Observation\Value\ObservationValuePayloadNormalizer;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
@@ -74,6 +75,17 @@ final readonly class ObservationService
         });
 
         return $created;
+    }
+
+    /**
+     * @return Collection<int, Observation>
+     */
+    public function list(): Collection
+    {
+        return Observation::withoutGlobalScope('user')
+            ->where('user_id', $this->user->id)
+            ->orderByDesc('created_at')
+            ->get();
     }
 
     public function getById(int $id): ?Observation
