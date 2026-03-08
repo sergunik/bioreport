@@ -201,10 +201,10 @@ final class AccountApiTest extends TestCase
         self::assertSame('patient doctor', $account->sensitive_words);
     }
 
-    public function test_update_account_rejects_sensitive_words_with_non_latin(): void
+    public function test_update_account_accepts_sensitive_words_with_cyrillic(): void
     {
         $user = User::factory()->create([
-            'email' => 'reject@example.com',
+            'email' => 'cyrillic@example.com',
             'password' => Hash::make('StrongPass123!@#'),
         ]);
 
@@ -222,10 +222,12 @@ final class AccountApiTest extends TestCase
         $response = $this->withCredentials()
             ->withUnencryptedCookie(config('auth_tokens.cookies.access_name'), $tokens['access'])
             ->patchJson('/api/account', [
-                'sensitive_words' => 'patient пацієнт doctor',
+                'sensitive_words' => 'serhii topolnytskyi 1986 zagreb Топольницький Сергій Михайлович',
             ]);
 
-        $response->assertStatus(422);
+        $response->assertStatus(200);
+        $account = Account::query()->where('user_id', $user->id)->firstOrFail();
+        self::assertSame('serhii topolnytskyi 1986 zagreb топольницький сергій михайлович', $account->sensitive_words);
     }
 
     public function test_update_account_rejects_forbidden_fields(): void
