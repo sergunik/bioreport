@@ -31,6 +31,19 @@ final class ObservationController extends AuthenticatedController
     }
 
     /**
+     * Returns all observations for the current user.
+     */
+    #[ScrambleResponse(200, 'List of observations', examples: [['data' => [['id' => 1, 'biomarker_name' => 'Hemoglobin', 'biomarker_code' => '718-7', 'value_type' => 'numeric', 'value' => 14.2, 'unit' => 'g/dL', 'reference_range_min' => 12.0, 'reference_range_max' => 16.0, 'reference_unit' => 'g/dL', 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z']]]])]
+    public function index(Request $request): JsonResponse
+    {
+        $observations = $this->observationService->list();
+
+        return response()->json([
+            'data' => ObservationResource::collection($observations)->toArray($request),
+        ]);
+    }
+
+    /**
      * Creates an observation for a diagnostic report owned by the current user.
      */
     #[ScrambleResponse(201, 'Created observation', examples: [['id' => 1, 'biomarker_name' => 'Hemoglobin', 'biomarker_code' => '718-7', 'value_type' => 'numeric', 'value' => 14.2, 'unit' => 'g/dL', 'reference_range_min' => 12.0, 'reference_range_max' => 16.0, 'reference_unit' => 'g/dL', 'created_at' => '2025-02-09T12:00:00.000000Z', 'updated_at' => '2025-02-09T12:00:00.000000Z']])]
