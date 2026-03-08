@@ -8,6 +8,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 final class CreateAccountRequest extends FormRequest
 {
+    use ValidatesSensitiveWords;
+
     public function authorize(): bool
     {
         return true;
@@ -30,7 +32,7 @@ final class CreateAccountRequest extends FormRequest
             /** @example "Europe/Kyiv" */
             'timezone' => ['sometimes', 'string', 'timezone'],
             /** @example "ivan ivanov patient's 123" */
-            'sensitive_words' => ['sometimes', 'nullable', 'string', 'max:50000', 'regex:/^([a-zA-Z0-9\']+(\s+[a-zA-Z0-9\']+)*)?$/'],
+            'sensitive_words' => ['sometimes', 'nullable', 'string', 'max:50000', 'regex:'.self::SENSITIVE_WORDS_REGEX],
         ];
     }
 }

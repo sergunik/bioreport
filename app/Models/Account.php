@@ -39,7 +39,7 @@ final class Account extends Model
 
             return;
         }
-        $normalized = strtolower(trim(preg_replace('/\s+/', ' ', $value)));
+        $normalized = mb_strtolower(trim(preg_replace('/\s+/', ' ', $value)), 'UTF-8');
 
         $this->attributes['sensitive_words'] = $normalized === '' ? null : $normalized;
     }
